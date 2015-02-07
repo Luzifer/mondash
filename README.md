@@ -7,7 +7,7 @@ results.
 
 ## Hosted
 
-There is an instance of MonDash running on [mondash.org](https://mondash.org/) you can use for free. This means you can just head over there, create your own dashboard with one click and start to push your own metrics to your dashboard within 5 minutes. No registration, no fees, just your dashboard and you.
+There is an instance of MonDash running on [www.mondash.org](https://www.mondash.org/) you can use for free. This means you can just head over there, create your own dashboard with one click and start to push your own metrics to your dashboard within 5 minutes. No registration, no fees, just your dashboard and you.
 
 ## Installation
 
