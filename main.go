@@ -113,6 +113,12 @@ func main() {
 			return
 		}
 
+		valid, reason := metricUpdate.IsValid()
+		if !valid {
+			http.Error(res, fmt.Sprintf("Invalid data: %s", reason), http.StatusInternalServerError)
+			return
+		}
+
 		updated := false
 		for _, m := range dash.Metrics {
 			if m.MetricID == params["metricid"] {
@@ -123,7 +129,7 @@ func main() {
 		}
 
 		if !updated {
-			tmp := &DashboardMetric{MetricID: params["metricid"]}
+			tmp := NewDashboardMetric()
 			tmp.Update(metricUpdate)
 			dash.Metrics = append(dash.Metrics, tmp)
 		}

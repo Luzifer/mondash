@@ -30,11 +30,12 @@ func LoadDashboard(dashid string) (*Dashboard, error) {
 func (d *Dashboard) Save() {
 	data, err := json.Marshal(d)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error while marshalling dashboard: %s", err)
+		return
 	}
 	err = s3Storage.Put(d.DashboardID, data, "application/json", s3.Private)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error while storing dashboard: %s", err)
 	}
 }
 
@@ -114,9 +115,11 @@ func (dm *DashboardMetric) Update(m *DashboardMetric) {
 	dm.HistoricalData = tmp
 
 	dm.Meta.LastUpdate = time.Now()
-	dm.Meta.PercCrit = countStatus["Critical"] / countStatus["Total"] * 100
-	dm.Meta.PercWarn = countStatus["Warning"] / countStatus["Total"] * 100
-	dm.Meta.PercOK = countStatus["OK"] / countStatus["Total"] * 100
+	if countStatus["Total"] > 0 {
+		dm.Meta.PercCrit = countStatus["Critical"] / countStatus["Total"] * 100
+		dm.Meta.PercWarn = countStatus["Warning"] / countStatus["Total"] * 100
+		dm.Meta.PercOK = countStatus["OK"] / countStatus["Total"] * 100
+	}
 }
 
 func (dm *DashboardMetric) IsValid() (bool, string) {
