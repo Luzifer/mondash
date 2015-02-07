@@ -101,6 +101,10 @@ func main() {
 
 		dash, err := LoadDashboard(params["dashid"])
 		if err != nil {
+			if len(req.Header.Get("Authorization")) < 10 {
+				http.Error(res, "APIKey is too insecure", http.StatusUnauthorized)
+				return
+			}
 			dash = &Dashboard{APIKey: req.Header.Get("Authorization"), Metrics: DashboardMetrics{}, DashboardID: params["dashid"]}
 		}
 
