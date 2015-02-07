@@ -78,6 +78,7 @@ func NewDashboardMetric() *DashboardMetric {
 		Expires:        604800,
 		Freshness:      3600,
 		HistoricalData: DashboardMetricHistory{},
+		Meta:           DashboardMetricMeta{},
 	}
 }
 
