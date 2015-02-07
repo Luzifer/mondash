@@ -1,0 +1,97 @@
+FORMAT: 1A
+HOST: www.mondash.org
+
+# MonDash
+MonDash is a service for everyone having to display monitoring results to people who have not 
+the time or knowledge to get familar with Nagios / Icinga or similar monitoring systems. Therefore
+MonDash provides a simple API to submit monitoring results and a simple dashboard to view those
+results.
+
+For the API to work you will need the APIToken assigned to your dashboard. This token is displayed
+on the dashboard itself as long as no metrics are available to display.
+
+To start just create a [randomly named dashboard](http://www.mondash.org/create) or start with a
+named dashboard by simply visiting http://www.mondash.org/mydashboardname (if you plan to use the
+named version please pay attention this will be easily guessable and you data is lesser protected
+than with the random naming.
+
+## Dashboard [/{dashid}]
+
+This API controls your dashboard itself
+
++ Parameters
+    + dashid (required, string, `098f6bcd4621d373cade`) ... The id of your dashboard to be found in the URL
+
+### Delete your dashboard [DELETE]
+
+This request will delete all your monitoring results available on your dashboard and release the
+dashboard URL to the public.
+
+_Please pay attention your dashboard URL will be available for others to register immediately
+as we are not storing any data beyond this DELETE request._
+
++ Request
+
+    + Header
+            
+            Authorization: MyAPIToken
+            
++ Response 200 (text/plain)
+
+        OK
+        
+## Metric [/{dashid}/{metricid}]
+
+This API controls the metrics on your dashboard
+
++ Parameters
+    + dashid (required, string, `098f6bcd4621d373cade`) ... The id of your dashboard to be found in the URL
+    + metricid (required, string, `beer_available`) ... The unique name for your metric
+
+### Submit a monitoring result [PUT]
++ Request (application/json)
+
+    + Header
+            
+            Authorization: MyAPIToken
+            
+    + Body
+    
+            {
+                "title": "Amount of beer in the fridge",
+                "description": "Currently there are 12 bottles of beer in the fridge",
+                "status": "OK",
+                "expires": 604800,
+                "freshness": 3600
+            }
+            
+    + Attributes (object)
+        + title (required, string) - The title of the metric to display on the dashboard
+        + description (required, string) - A descriptive text for the current state of the metric
+        + status (required, enum[string])
+            + `OK`
+            + `Warning`
+            + `Critical`
+            + `Unknown`
+        + expires: 604800 (optional, number) - Time in seconds when to remove the metric if there is no update (Valid: `0 < x < 604800`)
+        + freshness: 3600 (optional, number) - Time in seconds when to switch to `Unkown` state of there is no update (Valid: `0 < x < 604800`)
+
++ Response 200 (text/plain)
+
+    + Body
+
+            OK
+
+### Delete a metric from your dashboard [DELETE]
+
++ Request
+
+    + Header
+            
+            Authorization: MyAPIToken
+
++ Response 200 (text/plain)
+
+    + Body
+    
+            OK

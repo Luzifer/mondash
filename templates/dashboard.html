@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MonDash - Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">MonDash</a>
+        </div><!-- /.navbar-header -->
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/create">Get your own dashboard</a></li>
+          </ul><!-- /.navbar-right -->
+        </div><!-- /.navbar-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+    {% if dashid == "welcome" %}
+      <div class="row">
+        <div class="jumbotron text-center">
+          <h1>Welcome to MonDash!</h1>
+          <p>You're currently seeing a demo dashboard updated with random numbers below. To get started read the <a href="http://docs.mondash.apiary.io/" target="_blank">API documentation</a> and create your own dashboard by clicking the button in the upper right hand corner&hellip;
+          <p>If you have any questions about this project don't hesitate to ask <a href="https://luzifer.io/" target="_blank">Knut</a>.</p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if metrics|length == 0 and dashid != "welcome" %}
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3 text-center">
+          <p>Welcome to your new dashboard. Your API-key is:</p>
+          <pre>{{ apikey }}</pre>
+          <p>After you sent your first metric you can reach your dashboard here:</p>
+          <a href="{{ baseurl }}/{{ dashid }}">{{ baseurl }}/{{ dashid }}</a>
+        </div>
+      </div>
+    {% else %}
+      {% for metric in metrics %}
+        {% if metric.Status == "OK" %}
+        <div class="row alert alert-success">
+        {% elif metric.Status == "Warning" %}
+        <div class="row alert alert-warning">
+        {% elif metric.Status == "Critical" %}
+        <div class="row alert alert-danger">
+        {% else %}
+        <div class="row alert alert-info">
+        {% endif %}
+          <div class="col-md-9">
+            <h4>{{ metric.Title }}</h4>
+            <p>{{ metric.Description }}</p>
+            <small>
+              Updated {{ metric.Meta.LastUpdate|naturaltime}}
+              {% if metric.Status != "OK" %}
+               / Last ok {{ metric.Meta.LastOK|naturaltime }}
+              {% endif %}
+            </small>
+          </div>
+          <div class="col-md-3 hidden-xs">
+            <div class="progress">
+              <div class="progress-bar progress-bar-success" style="width: {{ metric.Meta.PercOK }}%">
+              </div>
+              <div class="progress-bar progress-bar-warning" style="width: {{ metric.Meta.PercWarn }}%">
+              </div>
+              <div class="progress-bar progress-bar-danger" style="width: {{ metric.Meta.PercCrit }}%">
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
