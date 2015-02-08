@@ -60,10 +60,19 @@ func main() {
 		if err != nil {
 			dash = &Dashboard{APIKey: generateAPIKey(), Metrics: DashboardMetrics{}}
 		}
-		sort.Sort(sort.Reverse(DashboardMetrics(dash.Metrics)))
+
+		// Filter out expired metrics
+		metrics := DashboardMetrics{}
+		for _, m := range dash.Metrics {
+			if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
+				metrics = append(metrics, m)
+			}
+		}
+
+		sort.Sort(sort.Reverse(DashboardMetrics(metrics)))
 		renderTemplate("dashboard.html", pongo2.Context{
 			"dashid":  params["dashid"],
-			"metrics": dash.Metrics,
+			"metrics": metrics,
 			"apikey":  dash.APIKey,
 			"baseurl": os.Getenv("BASE_URL"),
 		}, res)
