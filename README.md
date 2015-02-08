@@ -2,8 +2,8 @@
 
 MonDash is a service for everyone having to display monitoring results to people who have not 
 the time or knowledge to get familar with Nagios / Icinga or similar monitoring systems. Therefore
-MonDash provides a simple API to submit monitoring results and a simple dashboard to view those
-results.
+MonDash provides a [simple API](http://docs.mondash.apiary.io/) to submit monitoring results and a 
+simple dashboard to view those results.
 
 ## Hosted
 
