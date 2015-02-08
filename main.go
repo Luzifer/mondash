@@ -130,6 +130,7 @@ func main() {
 
 		if !updated {
 			tmp := NewDashboardMetric()
+			tmp.MetricID = params["metricid"]
 			tmp.Update(metricUpdate)
 			dash.Metrics = append(dash.Metrics, tmp)
 		}
