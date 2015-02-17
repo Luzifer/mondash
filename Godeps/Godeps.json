@@ -3,11 +3,6 @@
 	"GoVersion": "go1.4.1",
 	"Deps": [
 		{
-			"ImportPath": "code.google.com/p/go.text/transform",
-			"Comment": "null-104",
-			"Rev": "7ab6d3749429e2c62c53eecadf3e4ec5e715c11b"
-		},
-		{
 			"ImportPath": "code.google.com/p/go.text/unicode/norm",
 			"Comment": "null-104",
 			"Rev": "7ab6d3749429e2c62c53eecadf3e4ec5e715c11b"
@@ -43,6 +38,14 @@
 			"ImportPath": "github.com/russross/blackfriday",
 			"Comment": "v1.2-21-g7c8f3c1",
 			"Rev": "7c8f3c1dcc7e0f87c62af34ee193fc3251f6d8a4"
+		},
+		{
+			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
+			"Rev": "9a8b7d4e8f347bfa230879db9d7d4e4d9e19f962"
+		},
+		{
+			"ImportPath": "golang.org/x/text/transform",
+			"Rev": "8ec34a0272a20b3a6b12ecab475dd99e16610e4c"
 		},
 		{
 			"ImportPath": "launchpad.net/goamz/aws",
