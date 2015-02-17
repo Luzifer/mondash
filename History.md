@@ -1,4 +1,11 @@
 
+1.2.0 / 2015-02-17
+==================
+
+  * Added Godeps to ensure build environment is stable
+  * Added link to API docs to navbar
+  * Added HTTPs protocol to API documentation
+
 1.1.0 / 2015-02-08
 ==================
 
