@@ -9,25 +9,25 @@ import (
 	"launchpad.net/goamz/s3"
 )
 
-type Dashboard struct {
+type dashboard struct {
 	DashboardID string           `json:"-"`
 	APIKey      string           `json:"api_key"`
-	Metrics     DashboardMetrics `json:"metrics"`
+	Metrics     dashboardMetrics `json:"metrics"`
 }
 
-func LoadDashboard(dashid string) (*Dashboard, error) {
+func loadDashboard(dashid string) (*dashboard, error) {
 	data, err := s3Storage.Get(dashid)
 	if err != nil {
-		return &Dashboard{}, errors.New("Dashboard not found")
+		return &dashboard{}, errors.New("Dashboard not found")
 	}
 
-	tmp := &Dashboard{DashboardID: dashid}
+	tmp := &dashboard{DashboardID: dashid}
 	json.Unmarshal(data, tmp)
 
 	return tmp, nil
 }
 
-func (d *Dashboard) Save() {
+func (d *dashboard) Save() {
 	data, err := json.Marshal(d)
 	if err != nil {
 		log.Printf("Error while marshalling dashboard: %s", err)
@@ -39,31 +39,31 @@ func (d *Dashboard) Save() {
 	}
 }
 
-type DashboardMetrics []*DashboardMetric
+type dashboardMetrics []*dashboardMetric
 
-func (a DashboardMetrics) Len() int      { return len(a) }
-func (a DashboardMetrics) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a DashboardMetrics) Less(i, j int) bool {
+func (a dashboardMetrics) Len() int      { return len(a) }
+func (a dashboardMetrics) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a dashboardMetrics) Less(i, j int) bool {
 	return a[i].HistoricalData[0].Time.Before(a[j].HistoricalData[0].Time)
 }
 
-type DashboardMetric struct {
+type dashboardMetric struct {
 	MetricID       string                 `json:"id"`
 	Title          string                 `json:"title"`
 	Description    string                 `json:"description"`
 	Status         string                 `json:"status"`
 	Expires        int64                  `json:"expires,omitifempty"`
 	Freshness      int64                  `json:"freshness,omitifempty"`
-	HistoricalData DashboardMetricHistory `json:"history,omitifempty"`
-	Meta           DashboardMetricMeta    `json:"meta,omitifempty"`
+	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
+	Meta           dashboardMetricMeta    `json:"meta,omitifempty"`
 }
 
-type DashboardMetricStatus struct {
+type dashboardMetricStatus struct {
 	Time   time.Time `json:"time"`
 	Status string    `json:"status"`
 }
 
-type DashboardMetricMeta struct {
+type dashboardMetricMeta struct {
 	LastUpdate time.Time
 	LastOK     time.Time
 	PercOK     float64
@@ -71,19 +71,19 @@ type DashboardMetricMeta struct {
 	PercCrit   float64
 }
 
-type DashboardMetricHistory []DashboardMetricStatus
+type dashboardMetricHistory []dashboardMetricStatus
 
-func NewDashboardMetric() *DashboardMetric {
-	return &DashboardMetric{
+func newDashboardMetric() *dashboardMetric {
+	return &dashboardMetric{
 		Status:         "Unknown",
 		Expires:        604800,
 		Freshness:      3600,
-		HistoricalData: DashboardMetricHistory{},
-		Meta:           DashboardMetricMeta{},
+		HistoricalData: dashboardMetricHistory{},
+		Meta:           dashboardMetricMeta{},
 	}
 }
 
-func (dm *DashboardMetric) Update(m *DashboardMetric) {
+func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.Title = m.Title
 	dm.Description = m.Description
 	dm.Status = m.Status
@@ -93,7 +93,7 @@ func (dm *DashboardMetric) Update(m *DashboardMetric) {
 	if m.Freshness != 0 {
 		dm.Freshness = m.Freshness
 	}
-	dm.HistoricalData = append(DashboardMetricHistory{DashboardMetricStatus{
+	dm.HistoricalData = append(dashboardMetricHistory{dashboardMetricStatus{
 		Time:   time.Now(),
 		Status: m.Status,
 	}}, dm.HistoricalData...)
@@ -101,7 +101,7 @@ func (dm *DashboardMetric) Update(m *DashboardMetric) {
 	countStatus := make(map[string]float64)
 
 	expired := time.Now().Add(time.Duration(dm.Expires*-1) * time.Second)
-	tmp := DashboardMetricHistory{}
+	tmp := dashboardMetricHistory{}
 	for _, s := range dm.HistoricalData {
 		if s.Time.After(expired) {
 			tmp = append(tmp, s)
@@ -122,7 +122,7 @@ func (dm *DashboardMetric) Update(m *DashboardMetric) {
 	}
 }
 
-func (dm *DashboardMetric) IsValid() (bool, string) {
+func (dm *dashboardMetric) IsValid() (bool, string) {
 	if dm.Expires > 604800 || dm.Expires < 0 {
 		return false, "Expires not in range 0 < x < 640800"
 	}

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func RunWelcomePage() {
+func runWelcomePage() {
 	baseURL := os.Getenv("BASE_URL")
 	welcomeAPIToken := os.Getenv("API_TOKEN")
 	generateTicker := time.NewTicker(time.Minute)
@@ -30,7 +30,7 @@ func RunWelcomePage() {
 				break
 			}
 
-			beer := DashboardMetric{
+			beer := dashboardMetric{
 				Title:       "Amount of beer in the fridge",
 				Description: fmt.Sprintf("Currently there are %d bottles of beer in the fridge", beers),
 				Status:      status,

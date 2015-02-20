@@ -56,20 +56,20 @@ func main() {
 	})
 
 	m.Get("/:dashid", func(params martini.Params, res http.ResponseWriter) {
-		dash, err := LoadDashboard(params["dashid"])
+		dash, err := loadDashboard(params["dashid"])
 		if err != nil {
-			dash = &Dashboard{APIKey: generateAPIKey(), Metrics: DashboardMetrics{}}
+			dash = &dashboard{APIKey: generateAPIKey(), Metrics: dashboardMetrics{}}
 		}
 
 		// Filter out expired metrics
-		metrics := DashboardMetrics{}
+		metrics := dashboardMetrics{}
 		for _, m := range dash.Metrics {
 			if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
 				metrics = append(metrics, m)
 			}
 		}
 
-		sort.Sort(sort.Reverse(DashboardMetrics(metrics)))
+		sort.Sort(sort.Reverse(dashboardMetrics(metrics)))
 		renderTemplate("dashboard.html", pongo2.Context{
 			"dashid":  params["dashid"],
 			"metrics": metrics,
@@ -79,7 +79,7 @@ func main() {
 	})
 
 	m.Delete("/:dashid", func(params martini.Params, req *http.Request, res http.ResponseWriter) {
-		dash, err := LoadDashboard(params["dashid"])
+		dash, err := loadDashboard(params["dashid"])
 		if err != nil {
 			http.Error(res, "This dashboard does not exist.", http.StatusInternalServerError)
 			return
@@ -101,20 +101,20 @@ func main() {
 			return
 		}
 
-		metricUpdate := NewDashboardMetric()
+		metricUpdate := newDashboardMetric()
 		err = json.Unmarshal(body, metricUpdate)
 		if err != nil {
 			http.Error(res, "Unable to unmarshal json", http.StatusInternalServerError)
 			return
 		}
 
-		dash, err := LoadDashboard(params["dashid"])
+		dash, err := loadDashboard(params["dashid"])
 		if err != nil {
 			if len(req.Header.Get("Authorization")) < 10 {
 				http.Error(res, "APIKey is too insecure", http.StatusUnauthorized)
 				return
 			}
-			dash = &Dashboard{APIKey: req.Header.Get("Authorization"), Metrics: DashboardMetrics{}, DashboardID: params["dashid"]}
+			dash = &dashboard{APIKey: req.Header.Get("Authorization"), Metrics: dashboardMetrics{}, DashboardID: params["dashid"]}
 		}
 
 		if dash.APIKey != req.Header.Get("Authorization") {
@@ -138,7 +138,7 @@ func main() {
 		}
 
 		if !updated {
-			tmp := NewDashboardMetric()
+			tmp := newDashboardMetric()
 			tmp.MetricID = params["metricid"]
 			tmp.Update(metricUpdate)
 			dash.Metrics = append(dash.Metrics, tmp)
@@ -150,9 +150,9 @@ func main() {
 	})
 
 	m.Delete("/:dashid/:metricid", func(params martini.Params, req *http.Request, res http.ResponseWriter) {
-		dash, err := LoadDashboard(params["dashid"])
+		dash, err := loadDashboard(params["dashid"])
 		if err != nil {
-			dash = &Dashboard{APIKey: req.Header.Get("Authorization"), Metrics: DashboardMetrics{}, DashboardID: params["dashid"]}
+			dash = &dashboard{APIKey: req.Header.Get("Authorization"), Metrics: dashboardMetrics{}, DashboardID: params["dashid"]}
 		}
 
 		if dash.APIKey != req.Header.Get("Authorization") {
@@ -160,7 +160,7 @@ func main() {
 			return
 		}
 
-		tmp := DashboardMetrics{}
+		tmp := dashboardMetrics{}
 		for _, m := range dash.Metrics {
 			if m.MetricID != params["metricid"] {
 				tmp = append(tmp, m)
@@ -172,7 +172,7 @@ func main() {
 		http.Error(res, "OK", http.StatusOK)
 	})
 
-	go RunWelcomePage()
+	go runWelcomePage()
 
 	// GO!
 	m.Run()
