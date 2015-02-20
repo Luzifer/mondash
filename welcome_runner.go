@@ -45,7 +45,10 @@ func runWelcomePage() {
 			url := fmt.Sprintf("%s/welcome/beer_available", baseURL)
 			req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(body))
 			req.Header.Add("Authorization", welcomeAPIToken)
-			http.DefaultClient.Do(req)
+			_, err = http.DefaultClient.Do(req)
+			if err != nil {
+				log.Printf("[WelcomeRunner] %s", err)
+			}
 		}
 	}
 

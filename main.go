@@ -90,7 +90,7 @@ func main() {
 			return
 		}
 
-		s3Storage.Del(params["dashid"])
+		_ = s3Storage.Del(params["dashid"])
 		http.Error(res, "OK", http.StatusOK)
 	})
 
@@ -186,10 +186,10 @@ func generateAPIKey() string {
 
 func renderTemplate(templateName string, context pongo2.Context, res http.ResponseWriter) {
 	if tpl, ok := templates[templateName]; ok {
-		tpl.ExecuteWriter(context, res)
+		_ = tpl.ExecuteWriter(context, res)
 	} else {
 		res.WriteHeader(http.StatusInternalServerError)
-		res.Write([]byte(fmt.Sprintf("Template %s not found!", templateName)))
+		_, _ = res.Write([]byte(fmt.Sprintf("Template %s not found!", templateName)))
 	}
 }
 

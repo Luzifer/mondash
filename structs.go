@@ -22,7 +22,7 @@ func loadDashboard(dashid string) (*dashboard, error) {
 	}
 
 	tmp := &dashboard{DashboardID: dashid}
-	json.Unmarshal(data, tmp)
+	_ = json.Unmarshal(data, tmp)
 
 	return tmp, nil
 }
