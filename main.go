@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s3Conn := s3.New(awsAuth, aws.EUWest)
+	s3Conn := s3.New(awsAuth, aws.USEast)
 	s3Storage = s3Conn.Bucket(os.Getenv("S3Bucket"))
 
 	m := martini.Classic()
