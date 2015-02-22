@@ -120,11 +120,11 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	if m.Freshness != 0 {
 		dm.Freshness = m.Freshness
 	}
-	dm.HistoricalData = append(dashboardMetricHistory{dashboardMetricStatus{
+	dm.HistoricalData = append(dm.HistoricalData, dashboardMetricStatus{
 		Time:   time.Now(),
 		Status: m.Status,
 		Value:  m.Value,
-	}}, dm.HistoricalData...)
+	})
 
 	countStatus := make(map[string]float64)
 
