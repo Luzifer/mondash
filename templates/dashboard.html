@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
+	<!-- Chartist Library -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -75,6 +79,20 @@
           <div class="col-md-9">
             <h4>{{ metric.Title }}</h4>
             <p>{{ metric.Description }}</p>
+			<span class="label label-info">Current Value: {{ metric.Value }}</span>
+			<div class="ct-chart {{metric.MetricID}} .ct-double-octave"></div>
+			<script>
+				    var data = {
+				        // A labels array that can contain any sort of values
+				        labels: {{ metric.LabelHistory }},
+				        // Our series array that contains series objects or in this case series data arrays
+				        series: [
+				            {{ metric.DataHistory }}
+				        ]
+				    };
+				
+				    new Chartist.Line('.{{metric.MetricID}}', data);
+			</script>
             <small>
               Updated {{ metric.Meta.LastUpdate|naturaltime}}
               {% if metric.Status != "OK" %}

@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"log"
-	"time"
-
 	"launchpad.net/goamz/s3"
+	"log"
+	"strconv"
+	"time"
 )
 
 type dashboard struct {
@@ -52,6 +52,7 @@ type dashboardMetric struct {
 	Title          string                 `json:"title"`
 	Description    string                 `json:"description"`
 	Status         string                 `json:"status"`
+	Value          float64                `json:"value,omitifempty"`
 	Expires        int64                  `json:"expires,omitifempty"`
 	Freshness      int64                  `json:"freshness,omitifempty"`
 	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
@@ -61,6 +62,7 @@ type dashboardMetric struct {
 type dashboardMetricStatus struct {
 	Time   time.Time `json:"time"`
 	Status string    `json:"status"`
+	Value  float64   `json:"value"`
 }
 
 type dashboardMetricMeta struct {
@@ -83,10 +85,35 @@ func newDashboardMetric() *dashboardMetric {
 	}
 }
 
+func (dm *dashboardMetric) LabelHistory() string {
+	s := "["
+	for i, v := range dm.HistoricalData {
+		if i != 0 {
+			s = s + ", "
+		}
+		s = s + "" + strconv.Itoa(int(v.Time.Unix())) + ""
+	}
+	s = s + "]"
+	return s
+}
+
+func (dm *dashboardMetric) DataHistory() string {
+	s := "["
+	for i, v := range dm.HistoricalData {
+		if i != 0 {
+			s = s + ", "
+		}
+		s = s + strconv.FormatFloat(v.Value, 'g', 4, 64)
+	}
+	s = s + "]"
+	return s
+}
+
 func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.Title = m.Title
 	dm.Description = m.Description
 	dm.Status = m.Status
+	dm.Value = m.Value
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
 	}
@@ -96,6 +123,7 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.HistoricalData = append(dashboardMetricHistory{dashboardMetricStatus{
 		Time:   time.Now(),
 		Status: m.Status,
+		Value:  m.Value,
 	}}, dm.HistoricalData...)
 
 	countStatus := make(map[string]float64)
