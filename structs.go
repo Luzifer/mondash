@@ -89,10 +89,17 @@ func newDashboardMetric() *dashboardMetric {
 func median(values []float64) float64 {
 	sort.Float64s(values)
 
+	if len(values) == 1 {
+		return values[0]
+	}
+
 	// If even, take an average
 	if len(values)%2 == 0 {
 		return 0.5*values[len(values)/2] + 0.5*values[len(values)/2-1]
 	}
+
+	log.Printf("len(values)=%v, len(values)/2=%v\n", len(values), len(values)/2)
+
 	return values[len(values)/2-1]
 }
 
