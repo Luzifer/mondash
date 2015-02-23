@@ -81,11 +81,11 @@
       </div>
     {% else %}
       {% for metric in metrics %}
-        {% if metric.Status == "OK" %}
+        {% if metric.StatisticalStatus == "OK" %}
         <div class="row alert alert-success">
-        {% elif metric.Status == "Warning" %}
+        {% elif metric.StatisticalStatus == "Warning" %}
         <div class="row alert alert-warning">
-        {% elif metric.Status == "Critical" %}
+        {% elif metric.StatisticalStatus == "Critical" %}
         <div class="row alert alert-danger">
         {% else %}
         <div class="row alert alert-info">
@@ -93,7 +93,7 @@
           <div class="col-md-9">
             <h4>{{ metric.Title }}</h4>
             <p>{{ metric.Description }}</p>
-			<span class="label label-info">Current Value: {{ metric.Value }}</span>
+			<span><span class="label label-info">Current Value: {{ metric.Value }}</span> {{ metric.MadMultiplier }} MAD above the Median ({{ metric.Median }})</span>
 			<div class="ct-chart {{metric.MetricID}} .ct-double-octave"></div>
 			<script>
 				    var data = {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"launchpad.net/goamz/s3"
 	"log"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -83,6 +84,74 @@ func newDashboardMetric() *dashboardMetric {
 		HistoricalData: dashboardMetricHistory{},
 		Meta:           dashboardMetricMeta{},
 	}
+}
+
+func median(values []float64) float64 {
+	sort.Float64s(values)
+
+	// If even, take an average
+	if len(values)%2 == 0 {
+		return 0.5*values[len(values)/2] + 0.5*values[len(values)/2-1]
+	}
+	return values[len(values)/2-1]
+}
+
+func absoluteValue(value float64) float64 {
+	if value < 0 {
+		value = -value
+	}
+	return value
+}
+
+func absoluteDeviation(values []float64) []float64 {
+	medianValue := median(values)
+
+	deviation := make([]float64, len(values))
+
+	for i, _ := range values {
+		deviation[i] = absoluteValue(values[i] - medianValue)
+	}
+
+	return deviation
+}
+
+func (dm *dashboardMetric) getValueArray() []float64 {
+	values := make([]float64, 0)
+
+	for _, v := range dm.HistoricalData {
+		values = append(values, v.Value)
+	}
+
+	return values
+}
+
+func (dm *dashboardMetric) Median() float64 {
+	return median(dm.getValueArray())
+}
+
+func (dm *dashboardMetric) MedianAbsoluteDeviation() (float64, float64) {
+	values := dm.getValueArray()
+	medianValue := dm.Median()
+
+	return medianValue, median(absoluteDeviation(values))
+}
+
+func (dm *dashboardMetric) MadMultiplier() float64 {
+	medianValue, MAD := dm.MedianAbsoluteDeviation()
+
+	return absoluteValue(dm.Value-medianValue) / MAD
+}
+
+func (dm *dashboardMetric) StatisticalStatus() string {
+	mult := dm.MadMultiplier()
+
+	if mult > 4 {
+		return "Critical"
+	} else if mult > 3 {
+		return "Warning"
+	}
+
+	return "OK"
 }
 
 func (dm *dashboardMetric) LabelHistory() string {
