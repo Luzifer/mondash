@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"launchpad.net/goamz/s3"
+	"io/ioutil"
+	//"launchpad.net/goamz/s3"
 	"log"
+	//"os"
 	"sort"
 	"strconv"
 	"time"
@@ -17,7 +19,7 @@ type dashboard struct {
 }
 
 func loadDashboard(dashid string) (*dashboard, error) {
-	data, err := s3Storage.Get(dashid)
+	data, err := ioutil.ReadFile(dashid + ".txt")
 	if err != nil {
 		return &dashboard{}, errors.New("Dashboard not found")
 	}
@@ -34,7 +36,8 @@ func (d *dashboard) Save() {
 		log.Printf("Error while marshalling dashboard: %s", err)
 		return
 	}
-	err = s3Storage.Put(d.DashboardID, data, "application/json", s3.Private)
+	err = ioutil.WriteFile(d.DashboardID+".txt", data, 0600)
+
 	if err != nil {
 		log.Printf("Error while storing dashboard: %s", err)
 	}
