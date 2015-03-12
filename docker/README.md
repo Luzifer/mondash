@@ -21,7 +21,7 @@ docker run \
          -e AWS_ACCESS_KEY_ID=myaccesskeyid \
          -e AWS_SECRET_ACCESS_KEY=mysecretaccesskey \
          -e S3Bucket=mybucketname \
-         -e BASE_URL=http://www.mondash.org \
+         -e BASE_URL=http://mondash.org \
          -e API_TOKEN=yourownrandomtoken \
          -p 80:3000 \
          luzifer/mondash

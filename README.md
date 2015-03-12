@@ -7,7 +7,7 @@ simple dashboard to view those results.
 
 ## Hosted
 
-There is an instance of MonDash running on [www.mondash.org](https://www.mondash.org/) you can use for free. This means you can just head over there, create your own dashboard with one click and start to push your own metrics to your dashboard within 5 minutes. No registration, no fees, just your dashboard and you.
+There is an instance of MonDash running on [mondash.org](https://mondash.org/) you can use for free. This means you can just head over there, create your own dashboard with one click and start to push your own metrics to your dashboard within 5 minutes. No registration, no fees, just your dashboard and you.
 
 ## Installation
 
@@ -20,7 +20,7 @@ MonDash needs some environment variables set when running:
 + `AWS_ACCESS_KEY_ID` - Your AWS Access-Key with access to the `S3Bucket`
 + `AWS_SECRET_ACCESS_KEY` - Your AWS Secret-Access-Key with access to the `S3Bucket`
 + `S3Bucket` - The S3 bucket used to store the dashboard metrics
-+ `BASE_URL` - The Base-URL the application is running on for example `https://www.mondash.org`
++ `BASE_URL` - The Base-URL the application is running on for example `https://mondash.org`
 + `API_TOKEN` - API Token used for the /welcome dashboard (you can choose your own)
 
 ## Security
