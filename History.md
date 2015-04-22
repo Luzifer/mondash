@@ -1,4 +1,10 @@
 
+1.2.2 / 2015-04-22
+==================
+
+  * Close the reader to ensure we don't spam with open FDs
+  * Replaced URL to use apex
+
 1.2.1 / 2015-02-20
 ==================
 
