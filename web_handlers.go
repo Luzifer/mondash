@@ -89,7 +89,12 @@ func handlePutMetric(res http.ResponseWriter, req *http.Request) {
 			http.Error(res, "APIKey is too insecure", http.StatusUnauthorized)
 			return
 		}
-		dash = &dashboard{APIKey: req.Header.Get("Authorization"), Metrics: dashboardMetrics{}, DashboardID: params["dashid"]}
+		dash = &dashboard{
+			APIKey:      req.Header.Get("Authorization"),
+			Metrics:     dashboardMetrics{},
+			DashboardID: params["dashid"],
+			storage:     store,
+		}
 	}
 
 	if dash.APIKey != req.Header.Get("Authorization") {
