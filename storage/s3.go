@@ -10,11 +10,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
+// S3Storage is a storage adapter storing the data into single S3 files
 type S3Storage struct {
 	s3connection *s3.S3
 	cfg          *config.Config
 }
 
+// NewS3Storage instanciates a new S3Storage
 func NewS3Storage(cfg *config.Config) *S3Storage {
 	s3connection := s3.New(&aws.Config{})
 	return &S3Storage{
@@ -22,6 +24,7 @@ func NewS3Storage(cfg *config.Config) *S3Storage {
 	}
 }
 
+// Put writes the given data to S3
 func (s *S3Storage) Put(dashboardID string, data []byte) error {
 	_, err := s.s3connection.PutObject(&s3.PutObjectInput{
 		Bucket:      aws.String(s.cfg.S3.Bucket),
@@ -33,6 +36,7 @@ func (s *S3Storage) Put(dashboardID string, data []byte) error {
 	return err
 }
 
+// Get loads the data for the given dashboard from S3
 func (s *S3Storage) Get(dashboardID string) ([]byte, error) {
 	res, err := s.s3connection.GetObject(&s3.GetObjectInput{
 		Bucket: aws.String(s.cfg.S3.Bucket),
@@ -52,6 +56,7 @@ func (s *S3Storage) Get(dashboardID string) ([]byte, error) {
 	return data, nil
 }
 
+// Delete deletes the given dashboard from S3
 func (s *S3Storage) Delete(dashboardID string) error {
 	_, err := s.s3connection.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(s.cfg.S3.Bucket),
@@ -61,6 +66,7 @@ func (s *S3Storage) Delete(dashboardID string) error {
 	return err
 }
 
+// Exists checks for the existence of the given dashboard
 func (s *S3Storage) Exists(dashboardID string) (bool, error) {
 	_, err := s.s3connection.HeadObject(&s3.HeadObjectInput{
 		Bucket: aws.String(s.cfg.S3.Bucket),
@@ -73,9 +79,8 @@ func (s *S3Storage) Exists(dashboardID string) (bool, error) {
 				return false, nil
 			}
 			return false, err
-		} else {
-			return false, err
 		}
+		return false, err
 	}
 
 	return true, nil

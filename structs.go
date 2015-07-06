@@ -120,7 +120,7 @@ func absoluteDeviation(values []float64) []float64 {
 
 	deviation := make([]float64, len(values))
 
-	for i, _ := range values {
+	for i := range values {
 		deviation[i] = absoluteValue(values[i] - medianValue)
 	}
 
@@ -128,7 +128,7 @@ func absoluteDeviation(values []float64) []float64 {
 }
 
 func (dm *dashboardMetric) getValueArray() []float64 {
-	values := make([]float64, 0)
+	values := []float64{}
 
 	for _, v := range dm.HistoricalData {
 		values = append(values, v.Value)

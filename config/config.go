@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// Config is a storage struct for configuration parameters
 type Config struct {
 	Storage  string
 	BaseURL  string
@@ -16,6 +17,7 @@ type Config struct {
 	}
 }
 
+// Load parses arguments / ENV variable to load configuration
 func Load() *Config {
 	cfg := &Config{}
 	pflag.StringVar(&cfg.Storage, "storage", "s3", "Storage engine to use")
