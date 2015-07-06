@@ -8,6 +8,46 @@
 			"Rev": "7ab6d3749429e2c62c53eecadf3e4ec5e715c11b"
 		},
 		{
+			"ImportPath": "github.com/aws/aws-sdk-go/aws",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/endpoints",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/protocol/query",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/protocol/rest",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/protocol/restxml",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/protocol/xml/xmlutil",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/internal/signer/v4",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
+			"ImportPath": "github.com/aws/aws-sdk-go/service/s3",
+			"Comment": "v0.6.4-2-g168a70b",
+			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
+		},
+		{
 			"ImportPath": "github.com/codegangsta/inject",
 			"Comment": "v1.0-rc1-4-g4b81725",
 			"Rev": "4b8172520a03fa190f427bbd284db01b459bfce7"
@@ -44,18 +84,16 @@
 			"Rev": "9a8b7d4e8f347bfa230879db9d7d4e4d9e19f962"
 		},
 		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "f1e68ce945b0710375b5cccee37318a3d13fdf8c"
+		},
+		{
+			"ImportPath": "github.com/vaughan0/go-ini",
+			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
+		},
+		{
 			"ImportPath": "golang.org/x/text/transform",
 			"Rev": "8ec34a0272a20b3a6b12ecab475dd99e16610e4c"
-		},
-		{
-			"ImportPath": "launchpad.net/goamz/aws",
-			"Comment": "49",
-			"Rev": "martin.packman@canonical.com-20140813150539-umttn7s536u85eiz"
-		},
-		{
-			"ImportPath": "launchpad.net/goamz/s3",
-			"Comment": "49",
-			"Rev": "martin.packman@canonical.com-20140813150539-umttn7s536u85eiz"
 		}
 	]
 }
