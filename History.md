@@ -1,4 +1,14 @@
 
+1.4.0 / 2015-07-07
+==================
+
+  * Added abbreviation to MAD
+  * Write access-log
+  * Migrated to Gorilla mux instead of martini
+  * Added support for local file storage
+  * Moved towards modular storage system
+  * Added "value" parameter to API documentation and welcome runner
+
 1.3.0 / 2015-07-06
 ==================
 
