@@ -14,14 +14,23 @@ type Storage interface {
 	Exists(dashboardID string) (bool, error)
 }
 
-// NotFoundError is a named error for more simple determination which
+// AdapterNotFoundError is a named error for more simple determination which
 // type of error is thrown
-type NotFoundError struct {
+type AdapterNotFoundError struct {
 	Name string
 }
 
-func (e NotFoundError) Error() string {
+func (e AdapterNotFoundError) Error() string {
 	return fmt.Sprintf("Storage '%s' not found.", e.Name)
+}
+
+// DashboardNotFoundError signalizes the requested dashboard could not be found
+type DashboardNotFoundError struct {
+	DashboardID string
+}
+
+func (e DashboardNotFoundError) Error() string {
+	return fmt.Sprintf("Dashboard with ID '%s' was not found.", e.DashboardID)
 }
 
 // GetStorage acts as a storage factory providing the storage named by input
@@ -30,7 +39,9 @@ func GetStorage(cfg *config.Config) (Storage, error) {
 	switch cfg.Storage {
 	case "s3":
 		return NewS3Storage(cfg), nil
+	case "file":
+		return NewFileStorage(cfg), nil
 	}
 
-	return nil, NotFoundError{cfg.Storage}
+	return nil, AdapterNotFoundError{cfg.Storage}
 }

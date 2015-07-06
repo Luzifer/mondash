@@ -15,17 +15,24 @@ type Config struct {
 	S3 struct {
 		Bucket string
 	}
+
+	FileStorage struct {
+		Directory string
+	}
 }
 
 // Load parses arguments / ENV variable to load configuration
 func Load() *Config {
 	cfg := &Config{}
-	pflag.StringVar(&cfg.Storage, "storage", "s3", "Storage engine to use")
+	pflag.StringVar(&cfg.Storage, "storage", "s3", "Storage engine to use (s3, file)")
 	pflag.StringVar(&cfg.BaseURL, "baseurl", os.Getenv("BASE_URL"), "The Base-URL the application is running on for example https://mondash.org")
 	pflag.StringVar(&cfg.APIToken, "api-token", os.Getenv("API_TOKEN"), "API Token used for the /welcome dashboard (you can choose your own)")
 
 	// S3
 	pflag.StringVar(&cfg.S3.Bucket, "s3Bucket", os.Getenv("S3Bucket"), "Bucket to use for S3 storage")
+
+	// FileStorage
+	pflag.StringVar(&cfg.FileStorage.Directory, "fileDirectory", "./", "Directory to use for plain text storage")
 
 	pflag.Parse()
 	return cfg
