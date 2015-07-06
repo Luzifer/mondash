@@ -93,7 +93,19 @@
           <div class="col-md-9">
             <h4>{{ metric.Title }}</h4>
             <p>{{ metric.Description }}</p>
-			<span><span class="label label-info">Current Value: {{ metric.Value }}</span> {{ metric.MadMultiplier }} <abbr title="Median Absolute Deviation">MAD</abbr> above the Median ({{ metric.Median }})</span>
+			<span>
+        {% if metric.Status == "OK" %}
+        <span class="label label-success">Current Value: {{ metric.Value }}</span>
+        {% elif metric.Status == "Warning" %}
+        <span class="label label-warning">Current Value: {{ metric.Value }}</span>
+        {% elif metric.Status == "Critical" %}
+        <span class="label label-danger">Current Value: {{ metric.Value }}</span>
+        {% else %}
+        <span class="label label-info">Current Value: {{ metric.Value }}</span>
+        {% endif %}
+        {{ metric.MadMultiplier }} <abbr title="Median Absolute Deviation">MAD</abbr>
+        above the Median ({{ metric.Median }})
+      </span>
 			<div class="ct-chart {{metric.MetricID}} .ct-double-octave"></div>
 			<script>
 				    var data = {
