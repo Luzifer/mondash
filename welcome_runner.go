@@ -36,6 +36,7 @@ func runWelcomePage() {
 				Status:      status,
 				Expires:     86400,
 				Freshness:   120,
+				Value:       float64(beers),
 			}
 
 			body, err := json.Marshal(beer)
