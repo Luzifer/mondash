@@ -12,6 +12,8 @@ type Config struct {
 	BaseURL  string
 	APIToken string
 
+	Listen string
+
 	S3 struct {
 		Bucket string
 	}
@@ -27,6 +29,7 @@ func Load() *Config {
 	pflag.StringVar(&cfg.Storage, "storage", "s3", "Storage engine to use (s3, file)")
 	pflag.StringVar(&cfg.BaseURL, "baseurl", os.Getenv("BASE_URL"), "The Base-URL the application is running on for example https://mondash.org")
 	pflag.StringVar(&cfg.APIToken, "api-token", os.Getenv("API_TOKEN"), "API Token used for the /welcome dashboard (you can choose your own)")
+	pflag.StringVar(&cfg.Listen, "listen", ":3000", "Address to listen on")
 
 	// S3
 	pflag.StringVar(&cfg.S3.Bucket, "s3Bucket", os.Getenv("S3Bucket"), "Bucket to use for S3 storage")

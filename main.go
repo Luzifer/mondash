@@ -10,7 +10,7 @@ import (
 	"github.com/Luzifer/mondash/config"
 	"github.com/Luzifer/mondash/storage"
 	"github.com/flosch/pongo2"
-	"github.com/go-martini/martini"
+	"github.com/gorilla/mux"
 
 	_ "github.com/flosch/pongo2-addons"
 )
@@ -31,25 +31,26 @@ func main() {
 		fmt.Printf("An error occurred while loading the storage handler: %s", err)
 	}
 
-	m := martini.Classic()
+	r := mux.NewRouter()
+	r.HandleFunc("/", handleRedirectWelcome).
+		Methods("GET")
+	r.HandleFunc("/create", handleCreateRandomDashboard).
+		Methods("GET")
+	r.HandleFunc("/{dashid}", handleDisplayDashboard).
+		Methods("GET")
 
-	// Assets are in assets folder
-	m.Use(martini.Static("assets", martini.StaticOptions{Prefix: "/assets"}))
+	r.HandleFunc("/{dashid}/{metricid}", handlePutMetric).
+		Methods("PUT")
 
-	// Real handlers
-	m.Get("/", handleRedirectWelcome)
-	m.Get("/create", handleCreateRandomDashboard)
-	m.Get("/:dashid", handleDisplayDashboard)
-
-	m.Put("/:dashid/:metricid", handlePutMetric)
-
-	m.Delete("/:dashid", handleDeleteDashboard)
-	m.Delete("/:dashid/:metricid", handleDeleteMetric)
+	r.HandleFunc("/{dashid}", handleDeleteDashboard).
+		Methods("DELETE")
+	r.HandleFunc("/{dashid}/{metricid}", handleDeleteMetric).
+		Methods("DELETE")
 
 	go runWelcomePage(cfg)
 
-	// GO!
-	m.Run()
+	http.Handle("/", r)
+	http.ListenAndServe(cfg.Listen, nil)
 }
 
 func generateAPIKey() string {

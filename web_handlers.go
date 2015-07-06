@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/flosch/pongo2"
-	"github.com/go-martini/martini"
+	"github.com/gorilla/mux"
 )
 
 func handleRedirectWelcome(res http.ResponseWriter, req *http.Request) {
@@ -28,7 +28,8 @@ func handleCreateRandomDashboard(res http.ResponseWriter, req *http.Request) {
 	http.Redirect(res, req, fmt.Sprintf("/%s", urlProposal), http.StatusTemporaryRedirect)
 }
 
-func handleDisplayDashboard(params martini.Params, res http.ResponseWriter) {
+func handleDisplayDashboard(res http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
 	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		dash = &dashboard{APIKey: generateAPIKey(), Metrics: dashboardMetrics{}}
@@ -51,7 +52,8 @@ func handleDisplayDashboard(params martini.Params, res http.ResponseWriter) {
 	}, res)
 }
 
-func handleDeleteDashboard(params martini.Params, req *http.Request, res http.ResponseWriter) {
+func handleDeleteDashboard(res http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
 	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		http.Error(res, "This dashboard does not exist.", http.StatusInternalServerError)
@@ -67,7 +69,8 @@ func handleDeleteDashboard(params martini.Params, req *http.Request, res http.Re
 	http.Error(res, "OK", http.StatusOK)
 }
 
-func handlePutMetric(params martini.Params, req *http.Request, res http.ResponseWriter) {
+func handlePutMetric(res http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		http.Error(res, "Internal Server Error", http.StatusInternalServerError)
@@ -122,7 +125,8 @@ func handlePutMetric(params martini.Params, req *http.Request, res http.Response
 	http.Error(res, "OK", http.StatusOK)
 }
 
-func handleDeleteMetric(params martini.Params, req *http.Request, res http.ResponseWriter) {
+func handleDeleteMetric(res http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
 	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		dash = &dashboard{APIKey: req.Header.Get("Authorization"), Metrics: dashboardMetrics{}, DashboardID: params["dashid"]}
