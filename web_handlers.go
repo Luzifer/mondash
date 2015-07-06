@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"sort"
 	"time"
 
@@ -48,7 +47,7 @@ func handleDisplayDashboard(res http.ResponseWriter, req *http.Request) {
 		"dashid":  params["dashid"],
 		"metrics": metrics,
 		"apikey":  dash.APIKey,
-		"baseurl": os.Getenv("BASE_URL"),
+		"baseurl": cfg.BaseURL,
 	}, res)
 }
 
