@@ -25,10 +25,8 @@ func runWelcomePage(cfg *config.Config) {
 			switch {
 			case beers < 6:
 				status = "Critical"
-				break
 			case beers < 12:
 				status = "Warning"
-				break
 			}
 
 			beer := dashboardMetric{
@@ -43,6 +41,7 @@ func runWelcomePage(cfg *config.Config) {
 			body, err := json.Marshal(beer)
 			if err != nil {
 				log.Println(err)
+				continue
 			}
 			url := fmt.Sprintf("%s/welcome/beer_available", baseURL)
 			req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(body))
@@ -50,6 +49,7 @@ func runWelcomePage(cfg *config.Config) {
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				log.Printf("[WelcomeRunner] %s", err)
+				continue
 			}
 			resp.Body.Close()
 		}
