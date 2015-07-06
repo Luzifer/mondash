@@ -93,7 +93,7 @@
           <div class="col-md-9">
             <h4>{{ metric.Title }}</h4>
             <p>{{ metric.Description }}</p>
-			<span><span class="label label-info">Current Value: {{ metric.Value }}</span> {{ metric.MadMultiplier }} MAD above the Median ({{ metric.Median }})</span>
+			<span><span class="label label-info">Current Value: {{ metric.Value }}</span> {{ metric.MadMultiplier }} <abbr title="Median Absolute Deviation">MAD</abbr> above the Median ({{ metric.Median }})</span>
 			<div class="ct-chart {{metric.MetricID}} .ct-double-octave"></div>
 			<script>
 				    var data = {
@@ -104,11 +104,11 @@
 				            {{ metric.DataHistory }}
 				        ]
 				    };
-				
+
 					for (var i = 0; i < data.labels.length; i++) {
 						data.labels[i] = timeConverter(data.labels[i]);
 					}
-				
+
 				    new Chartist.Line('.{{metric.MetricID}}', data);
 			</script>
             <small>
