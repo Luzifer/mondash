@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	//"launchpad.net/goamz/s3"
 	"log"
+	//"os"
+	"sort"
+	"strconv"
 	"time"
-
-	"launchpad.net/goamz/s3"
 )
 
 type dashboard struct {
@@ -16,7 +19,7 @@ type dashboard struct {
 }
 
 func loadDashboard(dashid string) (*dashboard, error) {
-	data, err := s3Storage.Get(dashid)
+	data, err := ioutil.ReadFile(dashid + ".txt")
 	if err != nil {
 		return &dashboard{}, errors.New("Dashboard not found")
 	}
@@ -33,7 +36,8 @@ func (d *dashboard) Save() {
 		log.Printf("Error while marshalling dashboard: %s", err)
 		return
 	}
-	err = s3Storage.Put(d.DashboardID, data, "application/json", s3.Private)
+	err = ioutil.WriteFile(d.DashboardID+".txt", data, 0600)
+
 	if err != nil {
 		log.Printf("Error while storing dashboard: %s", err)
 	}
@@ -52,6 +56,7 @@ type dashboardMetric struct {
 	Title          string                 `json:"title"`
 	Description    string                 `json:"description"`
 	Status         string                 `json:"status"`
+	Value          float64                `json:"value,omitifempty"`
 	Expires        int64                  `json:"expires,omitifempty"`
 	Freshness      int64                  `json:"freshness,omitifempty"`
 	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
@@ -61,6 +66,7 @@ type dashboardMetric struct {
 type dashboardMetricStatus struct {
 	Time   time.Time `json:"time"`
 	Status string    `json:"status"`
+	Value  float64   `json:"value"`
 }
 
 type dashboardMetricMeta struct {
@@ -83,20 +89,121 @@ func newDashboardMetric() *dashboardMetric {
 	}
 }
 
+func median(values []float64) float64 {
+	sort.Float64s(values)
+
+	if len(values) == 1 {
+		return values[0]
+	}
+
+	// If even, take an average
+	if len(values)%2 == 0 {
+		return 0.5*values[len(values)/2] + 0.5*values[len(values)/2-1]
+	}
+
+	log.Printf("len(values)=%v, len(values)/2=%v\n", len(values), len(values)/2)
+
+	return values[len(values)/2-1]
+}
+
+func absoluteValue(value float64) float64 {
+	if value < 0 {
+		value = -value
+	}
+	return value
+}
+
+func absoluteDeviation(values []float64) []float64 {
+	medianValue := median(values)
+
+	deviation := make([]float64, len(values))
+
+	for i, _ := range values {
+		deviation[i] = absoluteValue(values[i] - medianValue)
+	}
+
+	return deviation
+}
+
+func (dm *dashboardMetric) getValueArray() []float64 {
+	values := make([]float64, 0)
+
+	for _, v := range dm.HistoricalData {
+		values = append(values, v.Value)
+	}
+
+	return values
+}
+
+func (dm *dashboardMetric) Median() float64 {
+	return median(dm.getValueArray())
+}
+
+func (dm *dashboardMetric) MedianAbsoluteDeviation() (float64, float64) {
+	values := dm.getValueArray()
+	medianValue := dm.Median()
+
+	return medianValue, median(absoluteDeviation(values))
+}
+
+func (dm *dashboardMetric) MadMultiplier() float64 {
+	medianValue, MAD := dm.MedianAbsoluteDeviation()
+
+	return absoluteValue(dm.Value-medianValue) / MAD
+}
+
+func (dm *dashboardMetric) StatisticalStatus() string {
+	mult := dm.MadMultiplier()
+
+	if mult > 4 {
+		return "Critical"
+	} else if mult > 3 {
+		return "Warning"
+	}
+
+	return "OK"
+}
+
+func (dm *dashboardMetric) LabelHistory() string {
+	s := "["
+	for i, v := range dm.HistoricalData {
+		if i != 0 {
+			s = s + ", "
+		}
+		s = s + "" + strconv.Itoa(int(v.Time.Unix())) + ""
+	}
+	s = s + "]"
+	return s
+}
+
+func (dm *dashboardMetric) DataHistory() string {
+	s := "["
+	for i, v := range dm.HistoricalData {
+		if i != 0 {
+			s = s + ", "
+		}
+		s = s + strconv.FormatFloat(v.Value, 'g', 4, 64)
+	}
+	s = s + "]"
+	return s
+}
+
 func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.Title = m.Title
 	dm.Description = m.Description
 	dm.Status = m.Status
+	dm.Value = m.Value
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
 	}
 	if m.Freshness != 0 {
 		dm.Freshness = m.Freshness
 	}
-	dm.HistoricalData = append(dashboardMetricHistory{dashboardMetricStatus{
+	dm.HistoricalData = append(dm.HistoricalData, dashboardMetricStatus{
 		Time:   time.Now(),
 		Status: m.Status,
-	}}, dm.HistoricalData...)
+		Value:  m.Value,
+	})
 
 	countStatus := make(map[string]float64)
 

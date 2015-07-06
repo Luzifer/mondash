@@ -19,10 +19,10 @@ func handleRedirectWelcome(res http.ResponseWriter, req *http.Request) {
 
 func handleCreateRandomDashboard(res http.ResponseWriter, req *http.Request) {
 	urlProposal := generateAPIKey()[0:20]
-	_, err := s3Storage.Get(urlProposal)
+	_, err := ioutil.ReadFile(urlProposal + ".txt")
 	for err == nil {
 		urlProposal = generateAPIKey()[0:20]
-		_, err = s3Storage.Get(urlProposal)
+		_, err = ioutil.ReadFile(urlProposal + ".txt")
 	}
 	http.Redirect(res, req, fmt.Sprintf("/%s", urlProposal), http.StatusTemporaryRedirect)
 }
@@ -62,7 +62,7 @@ func handleDeleteDashboard(params martini.Params, req *http.Request, res http.Re
 		return
 	}
 
-	_ = s3Storage.Del(params["dashid"])
+	//_ = s3Storage.Del(params["dashid"])
 	http.Error(res, "OK", http.StatusOK)
 }
 

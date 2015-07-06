@@ -10,6 +10,24 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
+	<!-- Chartist Library -->
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+	<script>
+	function timeConverter(UNIX_timestamp){
+	  var a = new Date(UNIX_timestamp*1000);
+	  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	  var year = a.getFullYear();
+	  var month = months[a.getMonth()];
+	  var date = a.getDate();
+	  var hour = a.getHours();
+	  var min = a.getMinutes();
+	  var sec = a.getSeconds();
+	  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+	  return time;
+	}
+	</script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -63,11 +81,11 @@
       </div>
     {% else %}
       {% for metric in metrics %}
-        {% if metric.Status == "OK" %}
+        {% if metric.StatisticalStatus == "OK" %}
         <div class="row alert alert-success">
-        {% elif metric.Status == "Warning" %}
+        {% elif metric.StatisticalStatus == "Warning" %}
         <div class="row alert alert-warning">
-        {% elif metric.Status == "Critical" %}
+        {% elif metric.StatisticalStatus == "Critical" %}
         <div class="row alert alert-danger">
         {% else %}
         <div class="row alert alert-info">
@@ -75,6 +93,24 @@
           <div class="col-md-9">
             <h4>{{ metric.Title }}</h4>
             <p>{{ metric.Description }}</p>
+			<span><span class="label label-info">Current Value: {{ metric.Value }}</span> {{ metric.MadMultiplier }} MAD above the Median ({{ metric.Median }})</span>
+			<div class="ct-chart {{metric.MetricID}} .ct-double-octave"></div>
+			<script>
+				    var data = {
+				        // A labels array that can contain any sort of values
+				        labels: {{ metric.LabelHistory }},
+				        // Our series array that contains series objects or in this case series data arrays
+				        series: [
+				            {{ metric.DataHistory }}
+				        ]
+				    };
+				
+					for (var i = 0; i < data.labels.length; i++) {
+						data.labels[i] = timeConverter(data.labels[i]);
+					}
+				
+				    new Chartist.Line('.{{metric.MetricID}}', data);
+			</script>
             <small>
               Updated {{ metric.Meta.LastUpdate|naturaltime}}
               {% if metric.Status != "OK" %}
