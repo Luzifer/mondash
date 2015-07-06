@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	//"os"
+	"os"
 	"time"
 
-	//"log"
+	"log"
 
-	//"launchpad.net/goamz/aws"
-	//"launchpad.net/goamz/s3"
+	"launchpad.net/goamz/aws"
+	"launchpad.net/goamz/s3"
 
 	"github.com/flosch/pongo2"
 	"github.com/go-martini/martini"
@@ -20,19 +20,18 @@ import (
 )
 
 var templates = make(map[string]*pongo2.Template)
-
-//var s3Storage *s3.Bucket
+var s3Storage *s3.Bucket
 
 func main() {
 	preloadTemplates()
 
 	// Initialize S3 storage
-	//awsAuth, err := aws.EnvAuth()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//s3Conn := s3.New(awsAuth, aws.USEast)
-	//s3Storage = s3Conn.Bucket(os.Getenv("S3Bucket"))
+	awsAuth, err := aws.EnvAuth()
+	if err != nil {
+		log.Fatal(err)
+	}
+	s3Conn := s3.New(awsAuth, aws.USEast)
+	s3Storage = s3Conn.Bucket(os.Getenv("S3Bucket"))
 
 	m := martini.Classic()
 
