@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -49,8 +50,20 @@ func main() {
 
 	go runWelcomePage(cfg)
 
-	http.Handle("/", r)
+	http.Handle("/", logHTTPRequest(r))
 	http.ListenAndServe(cfg.Listen, nil)
+}
+
+func logHTTPRequest(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(res http.ResponseWriter, r *http.Request) {
+		start := time.Now().UnixNano()
+		w := NewLogResponseWriter(res)
+
+		h.ServeHTTP(w, r)
+
+		d := (time.Now().UnixNano() - start) / 1000
+		log.Printf("%s %s %d %dµs %dB\n", r.Method, r.URL.Path, w.Status, d, w.Size)
+	})
 }
 
 func generateAPIKey() string {
