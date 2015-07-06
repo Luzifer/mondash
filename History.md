@@ -1,4 +1,13 @@
 
+1.3.0 / 2015-07-06
+==================
+
+  * Added license file
+  * Add statistical monitoring
+  * Add "value" as an option and basic graphing capabilities
+
+  Thanks [zainhoda](https://github.com/zainhoda) for the contribution containing graphing support!
+
 1.2.2 / 2015-04-22
 ==================
 
