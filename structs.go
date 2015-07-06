@@ -3,26 +3,31 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"launchpad.net/goamz/s3"
 	"log"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/Luzifer/mondash/storage"
 )
 
 type dashboard struct {
 	DashboardID string           `json:"-"`
 	APIKey      string           `json:"api_key"`
 	Metrics     dashboardMetrics `json:"metrics"`
+	storage     storage.Storage
 }
 
-func loadDashboard(dashid string) (*dashboard, error) {
-	data, err := s3Storage.Get(dashid)
+func loadDashboard(dashid string, store storage.Storage) (*dashboard, error) {
+	data, err := store.Get(dashid)
 	if err != nil {
 		return &dashboard{}, errors.New("Dashboard not found")
 	}
 
-	tmp := &dashboard{DashboardID: dashid}
+	tmp := &dashboard{
+		DashboardID: dashid,
+		storage:     store,
+	}
 	_ = json.Unmarshal(data, tmp)
 
 	return tmp, nil
@@ -34,7 +39,7 @@ func (d *dashboard) Save() {
 		log.Printf("Error while marshalling dashboard: %s", err)
 		return
 	}
-	err = s3Storage.Put(d.DashboardID, data, "application/json", s3.Private)
+	err = d.storage.Put(d.DashboardID, data)
 	if err != nil {
 		log.Printf("Error while storing dashboard: %s", err)
 	}

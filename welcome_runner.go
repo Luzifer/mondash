@@ -7,13 +7,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/Luzifer/mondash/config"
 )
 
-func runWelcomePage() {
-	baseURL := os.Getenv("BASE_URL")
-	welcomeAPIToken := os.Getenv("API_TOKEN")
+func runWelcomePage(cfg *config.Config) {
+	baseURL := cfg.BaseURL
+	welcomeAPIToken := cfg.APIToken
 	generateTicker := time.NewTicker(time.Minute)
 
 	for {

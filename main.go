@@ -5,33 +5,31 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
-	"log"
-
-	"launchpad.net/goamz/aws"
-	"launchpad.net/goamz/s3"
-
+	"github.com/Luzifer/mondash/config"
+	"github.com/Luzifer/mondash/storage"
 	"github.com/flosch/pongo2"
 	"github.com/go-martini/martini"
 
 	_ "github.com/flosch/pongo2-addons"
 )
 
-var templates = make(map[string]*pongo2.Template)
-var s3Storage *s3.Bucket
+var (
+	templates = make(map[string]*pongo2.Template)
+	store     storage.Storage
+	cfg       *config.Config
+)
 
 func main() {
 	preloadTemplates()
 
-	// Initialize S3 storage
-	awsAuth, err := aws.EnvAuth()
+	var err error
+	cfg = config.Load()
+	store, err = storage.GetStorage(cfg)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("An error occurred while loading the storage handler: %s", err)
 	}
-	s3Conn := s3.New(awsAuth, aws.EUWest)
-	s3Storage = s3Conn.Bucket(os.Getenv("S3Bucket"))
 
 	m := martini.Classic()
 
@@ -48,7 +46,7 @@ func main() {
 	m.Delete("/:dashid", handleDeleteDashboard)
 	m.Delete("/:dashid/:metricid", handleDeleteMetric)
 
-	go runWelcomePage()
+	go runWelcomePage(cfg)
 
 	// GO!
 	m.Run()

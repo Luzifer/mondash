@@ -18,17 +18,18 @@ func handleRedirectWelcome(res http.ResponseWriter, req *http.Request) {
 }
 
 func handleCreateRandomDashboard(res http.ResponseWriter, req *http.Request) {
-	urlProposal := generateAPIKey()[0:20]
-	_, err := s3Storage.Get(urlProposal)
-	for err == nil {
+	var urlProposal string
+	for {
 		urlProposal = generateAPIKey()[0:20]
-		_, err = s3Storage.Get(urlProposal)
+		if exists, err := store.Exists(urlProposal); err == nil && !exists {
+			break
+		}
 	}
 	http.Redirect(res, req, fmt.Sprintf("/%s", urlProposal), http.StatusTemporaryRedirect)
 }
 
 func handleDisplayDashboard(params martini.Params, res http.ResponseWriter) {
-	dash, err := loadDashboard(params["dashid"])
+	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		dash = &dashboard{APIKey: generateAPIKey(), Metrics: dashboardMetrics{}}
 	}
@@ -51,7 +52,7 @@ func handleDisplayDashboard(params martini.Params, res http.ResponseWriter) {
 }
 
 func handleDeleteDashboard(params martini.Params, req *http.Request, res http.ResponseWriter) {
-	dash, err := loadDashboard(params["dashid"])
+	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		http.Error(res, "This dashboard does not exist.", http.StatusInternalServerError)
 		return
@@ -62,7 +63,7 @@ func handleDeleteDashboard(params martini.Params, req *http.Request, res http.Re
 		return
 	}
 
-	_ = s3Storage.Del(params["dashid"])
+	store.Delete(params["dashid"])
 	http.Error(res, "OK", http.StatusOK)
 }
 
@@ -80,7 +81,7 @@ func handlePutMetric(params martini.Params, req *http.Request, res http.Response
 		return
 	}
 
-	dash, err := loadDashboard(params["dashid"])
+	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		if len(req.Header.Get("Authorization")) < 10 {
 			http.Error(res, "APIKey is too insecure", http.StatusUnauthorized)
@@ -122,7 +123,7 @@ func handlePutMetric(params martini.Params, req *http.Request, res http.Response
 }
 
 func handleDeleteMetric(params martini.Params, req *http.Request, res http.ResponseWriter) {
-	dash, err := loadDashboard(params["dashid"])
+	dash, err := loadDashboard(params["dashid"], store)
 	if err != nil {
 		dash = &dashboard{APIKey: req.Header.Get("Authorization"), Metrics: dashboardMetrics{}, DashboardID: params["dashid"]}
 	}
