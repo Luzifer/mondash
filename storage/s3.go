@@ -1,6 +1,7 @@
 package storage // import "github.com/Luzifer/mondash/storage"
 
 import (
+	"bytes"
 	"io/ioutil"
 	"strings"
 
@@ -31,7 +32,8 @@ func (s *S3Storage) Put(dashboardID string, data []byte) error {
 		Bucket:      aws.String(s.cfg.S3.Bucket),
 		ContentType: aws.String("application/json"),
 		Key:         aws.String(dashboardID),
-		// TODO: Private ACL
+		Body:        bytes.NewReader(data),
+		ACL:         aws.String("private"),
 	})
 
 	return err
