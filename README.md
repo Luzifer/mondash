@@ -1,8 +1,8 @@
 # Luzifer / mondash
 
-MonDash is a service for everyone having to display monitoring results to people who have not 
+MonDash is a service for everyone having to display monitoring results to people who have not
 the time or knowledge to get familar with Nagios / Icinga or similar monitoring systems. Therefore
-MonDash provides a [simple API](http://docs.mondash.apiary.io/) to submit monitoring results and a 
+MonDash provides a [simple API](http://docs.mondash.apiary.io/) to submit monitoring results and a
 simple dashboard to view those results.
 
 ## Hosted
@@ -15,13 +15,27 @@ However maybe you want to use MonDash for data you don't like to have public vis
 
 This archive will contain the binary you need to run your own instance and the template used for the display. If you want just edit the template, restart the daemon and you're done customizing MonDash. If you do so please do me one small favor: Include a hint to this repository / my instance.
 
-MonDash needs some environment variables set when running:
+To start MonDash you will need to make sure you configured your instance correctly:
 
-+ `AWS_ACCESS_KEY_ID` - Your AWS Access-Key with access to the `S3Bucket`
-+ `AWS_SECRET_ACCESS_KEY` - Your AWS Secret-Access-Key with access to the `S3Bucket`
-+ `S3Bucket` - The S3 bucket used to store the dashboard metrics
-+ `BASE_URL` - The Base-URL the application is running on for example `https://mondash.org`
-+ `API_TOKEN` - API Token used for the /welcome dashboard (you can choose your own)
+```bash
+# mondash -h
+Usage of mondash:
+      --api-token="": API Token used for the /welcome dashboard (you can choose your own)
+      --baseurl="": The Base-URL the application is running on for example https://mondash.org
+      --fileDirectory="./": Directory to use for plain text storage
+      --listen=":3000": Address to listen on
+      --s3Bucket="": Bucket to use for S3 storage
+      --storage="s3": Storage engine to use (s3, file)
+```
+
+1. If you want to store the data in S3:
+  - Set AWS environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`)
+  - Specify `--storage=s3` and `--s3Bucket=<yourbucket>`
+2. If you want to store the data in local file system:
+  - Ensure the data directory is writable
+  - Specify `--storage=file` and `--fileDirectory=<yourdirectory>`
+
+In all cases you need to specify `--api-token` with a token containing more than 10 characters and `--baseurl` with the base-URL of your instance.
 
 ## Security
 
