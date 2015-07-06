@@ -21,6 +21,7 @@ func NewS3Storage(cfg *config.Config) *S3Storage {
 	s3connection := s3.New(&aws.Config{})
 	return &S3Storage{
 		s3connection: s3connection,
+		cfg:          cfg,
 	}
 }
 
