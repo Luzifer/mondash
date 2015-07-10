@@ -1,4 +1,10 @@
 
+1.5.0 / 2015-07-10
+==================
+
+  * Display only 60 items in graph
+  * Colorize current value label according to metric status
+
 1.4.0 / 2015-07-07
 ==================
 
