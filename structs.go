@@ -166,27 +166,21 @@ func (dm *dashboardMetric) StatisticalStatus() string {
 	return "OK"
 }
 
-func (dm *dashboardMetric) LabelHistory() string {
-	s := "["
-	for i, v := range dm.HistoricalData {
-		if i != 0 {
-			s = s + ", "
-		}
-		s = s + "" + strconv.Itoa(int(v.Time.Unix())) + ""
+func (dm *dashboardMetric) LabelHistory() []string {
+	s := []string{}
+	for _, v := range dm.HistoricalData[len(dm.HistoricalData)-60:] {
+		s = append(s, strconv.Itoa(int(v.Time.Unix())))
 	}
-	s = s + "]"
+
 	return s
 }
 
-func (dm *dashboardMetric) DataHistory() string {
-	s := "["
-	for i, v := range dm.HistoricalData {
-		if i != 0 {
-			s = s + ", "
-		}
-		s = s + strconv.FormatFloat(v.Value, 'g', 4, 64)
+func (dm *dashboardMetric) DataHistory() []string {
+	s := []string{}
+	for _, v := range dm.HistoricalData[len(dm.HistoricalData)-60:] {
+		s = append(s, strconv.FormatFloat(v.Value, 'g', 4, 64))
 	}
-	s = s + "]"
+
 	return s
 }
 

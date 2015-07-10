@@ -13,6 +13,7 @@ import (
 	"github.com/flosch/pongo2"
 	"github.com/gorilla/mux"
 
+	_ "github.com/Luzifer/mondash/filters"
 	_ "github.com/flosch/pongo2-addons"
 )
 

@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
 	<!-- Chartist Library -->
-	<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
-    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+  <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 	<script>
 	function timeConverter(UNIX_timestamp){
 	  var a = new Date(UNIX_timestamp*1000);
@@ -110,11 +110,9 @@
 			<script>
 				    var data = {
 				        // A labels array that can contain any sort of values
-				        labels: {{ metric.LabelHistory }},
+				        labels: [{{ metric.LabelHistory|lastNItems:"60"|join:"," }}],
 				        // Our series array that contains series objects or in this case series data arrays
-				        series: [
-				            {{ metric.DataHistory }}
-				        ]
+				        series: [[{{ metric.DataHistory|lastNItems:"60"|join:"," }}]]
 				    };
 
 					for (var i = 0; i < data.labels.length; i++) {
