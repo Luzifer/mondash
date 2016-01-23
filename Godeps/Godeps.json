@@ -1,7 +1,12 @@
 {
 	"ImportPath": "github.com/Luzifer/mondash",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5.3",
 	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go.text/transform",
+			"Comment": "null-104",
+			"Rev": "7ab6d3749429e2c62c53eecadf3e4ec5e715c11b"
+		},
 		{
 			"ImportPath": "code.google.com/p/go.text/unicode/norm",
 			"Comment": "null-104",
@@ -48,11 +53,6 @@
 			"Rev": "168a70b9c21a4f60166d7925b690356605907adb"
 		},
 		{
-			"ImportPath": "github.com/codegangsta/inject",
-			"Comment": "v1.0-rc1-4-g4b81725",
-			"Rev": "4b8172520a03fa190f427bbd284db01b459bfce7"
-		},
-		{
 			"ImportPath": "github.com/extemporalgenome/slug",
 			"Rev": "de70af6e24d0e6bdd6eaef276d2e9910e68a1397"
 		},
@@ -62,22 +62,25 @@
 		},
 		{
 			"ImportPath": "github.com/flosch/pongo2",
-			"Comment": "v1.0-rc1-128-g97072c3",
-			"Rev": "97072c3325f05afc51c66ae2561b8f3b1543aee4"
+			"Comment": "v1.0-rc1-174-gf5d79aa",
+			"Rev": "f5d79aa0a914c08eb7f51a96cd7b2dbbe46fca46"
 		},
 		{
 			"ImportPath": "github.com/flosch/pongo2-addons",
 			"Rev": "bb4da1901facc08b4edd9261050143b95e36d0a1"
 		},
 		{
-			"ImportPath": "github.com/go-martini/martini",
-			"Comment": "v1.0-39-g42b0b68",
-			"Rev": "42b0b68fb383aac4f72331d0bd0948001b9be080"
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
 		},
 		{
 			"ImportPath": "github.com/russross/blackfriday",
-			"Comment": "v1.2-21-g7c8f3c1",
-			"Rev": "7c8f3c1dcc7e0f87c62af34ee193fc3251f6d8a4"
+			"Comment": "v1.3",
+			"Rev": "8cec3a854e68dba10faabbe31c089abf4a3e57a6"
 		},
 		{
 			"ImportPath": "github.com/shurcooL/sanitized_anchor_name",
@@ -90,10 +93,6 @@
 		{
 			"ImportPath": "github.com/vaughan0/go-ini",
 			"Rev": "a98ad7ee00ec53921f08832bc06ecf7fd600e6a1"
-		},
-		{
-			"ImportPath": "golang.org/x/text/transform",
-			"Rev": "8ec34a0272a20b3a6b12ecab475dd99e16610e4c"
 		}
 	]
 }

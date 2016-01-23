@@ -37,6 +37,21 @@ Usage of mondash:
 
 In all cases you need to specify `--api-token` with a token containing more than 10 characters and `--baseurl` with the base-URL of your instance.
 
+### Docker
+
+To launch it, just replace the variables in following command and start the container:
+
+```
+docker run \
+         -e AWS_ACCESS_KEY_ID=myaccesskeyid \
+         -e AWS_SECRET_ACCESS_KEY=mysecretaccesskey \
+         -e S3Bucket=mybucketname \
+         -e BASE_URL=http://mondash.org \
+         -e API_TOKEN=yourownrandomtoken \
+         -p 80:3000 \
+         luzifer/mondash
+```
+
 ## Security
 
 Just some words regarding security: MonDash was designed to be an open platform for creating dashboards without any hazzle. You just open a dashboard, send some data to it and you're already done. No need to think about OAuth or other authentication mechanisms.

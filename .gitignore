@@ -1,5 +1,4 @@
 gin-bin
 mondash
-Godeps/_workspace/
 *.sh
 data
