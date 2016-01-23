@@ -1,4 +1,10 @@
 
+1.5.1 / 2016-01-23
+==================
+
+  * Fixed docker build
+  * Fix: Do not try to load negative slice bounds
+
 1.5.0 / 2015-07-10
 ==================
 
