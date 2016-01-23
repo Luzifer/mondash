@@ -12,5 +12,9 @@ func filterLastNItems(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *po
 	}
 
 	from := in.Len() - param.Integer()
+	if from < 0 {
+		from = 0
+	}
+
 	return in.Slice(from, in.Len()), nil
 }

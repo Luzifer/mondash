@@ -168,7 +168,13 @@ func (dm *dashboardMetric) StatisticalStatus() string {
 
 func (dm *dashboardMetric) LabelHistory() []string {
 	s := []string{}
-	for _, v := range dm.HistoricalData[len(dm.HistoricalData)-60:] {
+
+	labelStart := len(dm.HistoricalData) - 60
+	if labelStart < 0 {
+		labelStart = 0
+	}
+
+	for _, v := range dm.HistoricalData[labelStart:] {
 		s = append(s, strconv.Itoa(int(v.Time.Unix())))
 	}
 
@@ -177,7 +183,13 @@ func (dm *dashboardMetric) LabelHistory() []string {
 
 func (dm *dashboardMetric) DataHistory() []string {
 	s := []string{}
-	for _, v := range dm.HistoricalData[len(dm.HistoricalData)-60:] {
+
+	dataStart := len(dm.HistoricalData) - 60
+	if dataStart < 0 {
+		dataStart = 0
+	}
+
+	for _, v := range dm.HistoricalData[dataStart:] {
 		s = append(s, strconv.FormatFloat(v.Value, 'g', 4, 64))
 	}
 
