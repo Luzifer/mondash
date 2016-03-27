@@ -40,6 +40,8 @@ func main() {
 		Methods("GET")
 	r.HandleFunc("/create", handleCreateRandomDashboard).
 		Methods("GET")
+	r.HandleFunc("/{dashid}.json", handleDisplayDashboardJSON).
+		Methods("GET")
 	r.HandleFunc("/{dashid}", handleDisplayDashboard).
 		Methods("GET")
 

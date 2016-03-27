@@ -169,6 +169,10 @@ func (dm *dashboardMetric) StatisticalStatus() string {
 }
 
 func (dm *dashboardMetric) PreferredStatus() string {
+	if dm.Meta.LastUpdate.Before(time.Now().Add(-1 * time.Duration(dm.Freshness) * time.Second)) {
+		return "Unknown"
+	}
+
 	if dm.IgnoreMAD {
 		return dm.Status
 	}

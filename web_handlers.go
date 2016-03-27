@@ -51,6 +51,54 @@ func handleDisplayDashboard(res http.ResponseWriter, req *http.Request) {
 	}, res)
 }
 
+func handleDisplayDashboardJSON(res http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
+	dash, err := loadDashboard(params["dashid"], store)
+	if err != nil {
+		dash = &dashboard{APIKey: generateAPIKey(), Metrics: dashboardMetrics{}}
+	}
+
+	response := struct {
+		APIKey  string `json:"api_key,omitempty"`
+		Metrics []struct {
+			ID          string    `json:"id"`
+			Title       string    `json:"title"`
+			Description string    `json:"description"`
+			Status      string    `json:"status"`
+			Value       float64   `json:"value"`
+			LastUpdate  time.Time `json:"last_update"`
+		} `json:"metrics"`
+	}{}
+
+	// Filter out expired metrics
+	for _, m := range dash.Metrics {
+		if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
+			response.Metrics = append(response.Metrics, struct {
+				ID          string    `json:"id"`
+				Title       string    `json:"title"`
+				Description string    `json:"description"`
+				Status      string    `json:"status"`
+				Value       float64   `json:"value"`
+				LastUpdate  time.Time `json:"last_update"`
+			}{
+				ID:          m.MetricID,
+				Title:       m.Title,
+				Description: m.Description,
+				Status:      m.PreferredStatus(),
+				Value:       m.Value,
+				LastUpdate:  m.Meta.LastUpdate,
+			})
+		}
+	}
+
+	if len(response.Metrics) == 0 {
+		response.APIKey = dash.APIKey
+	}
+
+	res.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(res).Encode(response)
+}
+
 func handleDeleteDashboard(res http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	dash, err := loadDashboard(params["dashid"], store)
