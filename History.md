@@ -1,4 +1,10 @@
 
+1.7.0 / 2016-03-27
+==================
+
+  * Added JSON version of dashboard
+  * Fix: Metrics now can get stale
+
 1.6.0 / 2016-03-27
 ==================
 
