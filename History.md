@@ -1,4 +1,11 @@
 
+1.6.0 / 2016-03-27
+==================
+
+  * Allow hiding of MAD by flag
+  * Include application version into response
+  * Allow to use passed status instead of MAD
+
 1.5.1 / 2016-01-23
 ==================
 
