@@ -81,11 +81,11 @@
       </div>
     {% else %}
       {% for metric in metrics %}
-        {% if metric.StatisticalStatus == "OK" %}
+        {% if metric.PreferredStatus == "OK" %}
         <div class="row alert alert-success">
-        {% elif metric.StatisticalStatus == "Warning" %}
+        {% elif metric.PreferredStatus == "Warning" %}
         <div class="row alert alert-warning">
-        {% elif metric.StatisticalStatus == "Critical" %}
+        {% elif metric.PreferredStatus == "Critical" %}
         <div class="row alert alert-danger">
         {% else %}
         <div class="row alert alert-info">

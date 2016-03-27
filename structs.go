@@ -61,6 +61,7 @@ type dashboardMetric struct {
 	Value          float64                `json:"value,omitifempty"`
 	Expires        int64                  `json:"expires,omitifempty"`
 	Freshness      int64                  `json:"freshness,omitifempty"`
+	IgnoreMAD      bool                   `json:"ignore_mad"`
 	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
 	Meta           dashboardMetricMeta    `json:"meta,omitifempty"`
 }
@@ -166,6 +167,14 @@ func (dm *dashboardMetric) StatisticalStatus() string {
 	return "OK"
 }
 
+func (dm *dashboardMetric) PreferredStatus() string {
+	if dm.IgnoreMAD {
+		return dm.Status
+	}
+
+	return dm.StatisticalStatus()
+}
+
 func (dm *dashboardMetric) LabelHistory() []string {
 	s := []string{}
 
@@ -201,6 +210,7 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.Description = m.Description
 	dm.Status = m.Status
 	dm.Value = m.Value
+	dm.IgnoreMAD = m.IgnoreMAD
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
 	}
