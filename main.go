@@ -21,6 +21,8 @@ var (
 	templates = make(map[string]*pongo2.Template)
 	store     storage.Storage
 	cfg       *config.Config
+
+	version string
 )
 
 func main() {
@@ -59,6 +61,8 @@ func logHTTPRequest(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, r *http.Request) {
 		start := time.Now().UnixNano()
 		w := NewLogResponseWriter(res)
+
+		w.Header().Set("X-Application-Version", version)
 
 		h.ServeHTTP(w, r)
 
