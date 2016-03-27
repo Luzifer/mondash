@@ -62,6 +62,7 @@ type dashboardMetric struct {
 	Expires        int64                  `json:"expires,omitifempty"`
 	Freshness      int64                  `json:"freshness,omitifempty"`
 	IgnoreMAD      bool                   `json:"ignore_mad"`
+	HideMAD        bool                   `json:"hide_mad"`
 	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
 	Meta           dashboardMetricMeta    `json:"meta,omitifempty"`
 }
@@ -211,6 +212,7 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.Status = m.Status
 	dm.Value = m.Value
 	dm.IgnoreMAD = m.IgnoreMAD
+	dm.HideMAD = m.HideMAD
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
 	}
