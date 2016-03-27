@@ -1,6 +1,7 @@
 {
 	"ImportPath": "github.com/Luzifer/mondash",
-	"GoVersion": "go1.5.3",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v60",
 	"Deps": [
 		{
 			"ImportPath": "code.google.com/p/go.text/transform",
