@@ -1,3 +1,6 @@
+# 1.8.0 / 2016-09-05
+
+  * Add client library to access MonDash
 
 1.7.0 / 2016-03-27
 ==================
@@ -32,21 +35,21 @@
   * Migrated to Gorilla mux instead of martini
   * Added support for local file storage
   * Moved towards modular storage system
-  * Added "value" parameter to API documentation and welcome runner
+  * Added &#34;value&#34; parameter to API documentation and welcome runner
 
 1.3.0 / 2015-07-06
 ==================
 
   * Added license file
   * Add statistical monitoring
-  * Add "value" as an option and basic graphing capabilities
+  * Add &#34;value&#34; as an option and basic graphing capabilities
 
   Thanks [zainhoda](https://github.com/zainhoda) for the contribution containing graphing support!
 
 1.2.2 / 2015-04-22
 ==================
 
-  * Close the reader to ensure we don't spam with open FDs
+  * Close the reader to ensure we don&#39;t spam with open FDs
   * Replaced URL to use apex
 
 1.2.1 / 2015-02-20
