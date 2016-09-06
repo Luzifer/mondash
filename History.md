@@ -1,3 +1,9 @@
+# 1.8.1 / 2016-09-06
+
+  * Fix: Use type Status instead of string
+  * Fix: Add missing &#34;Value&#34; field
+  * Fix: Set authorization token on client request
+
 # 1.8.0 / 2016-09-05
 
   * Add client library to access MonDash
@@ -35,21 +41,21 @@
   * Migrated to Gorilla mux instead of martini
   * Added support for local file storage
   * Moved towards modular storage system
-  * Added &#34;value&#34; parameter to API documentation and welcome runner
+  * Added &amp;#34;value&amp;#34; parameter to API documentation and welcome runner
 
 1.3.0 / 2015-07-06
 ==================
 
   * Added license file
   * Add statistical monitoring
-  * Add &#34;value&#34; as an option and basic graphing capabilities
+  * Add &amp;#34;value&amp;#34; as an option and basic graphing capabilities
 
   Thanks [zainhoda](https://github.com/zainhoda) for the contribution containing graphing support!
 
 1.2.2 / 2015-04-22
 ==================
 
-  * Close the reader to ensure we don&#39;t spam with open FDs
+  * Close the reader to ensure we don&amp;#39;t spam with open FDs
   * Replaced URL to use apex
 
 1.2.1 / 2015-02-20
