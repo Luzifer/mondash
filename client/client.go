@@ -17,10 +17,10 @@ type Status string
 
 // Collection of available status strings
 const (
-	StatusOK       = "OK"
-	StatusWarning  = "Warning"
-	StatusCritical = "Critical"
-	StatusUnknown  = "Unknown"
+	StatusOK       Status = "OK"
+	StatusWarning         = "Warning"
+	StatusCritical        = "Critical"
+	StatusUnknown         = "Unknown"
 )
 
 // Client represents an accessor to the MonDash API
