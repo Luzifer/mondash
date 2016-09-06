@@ -100,6 +100,9 @@ type PostMetricInput struct {
 	// One of: OK, Warning, Critical, Unknown
 	Status Status `json:"status"`
 
+	// The metric value to store with the status
+	Value float64 `json:"value"`
+
 	// Time in seconds when to remove the metric if there is no update (Valid: `0 < x < 604800`)
 	// Default: `604800`
 	Expires int64 `json:"expires,omitempty"`
