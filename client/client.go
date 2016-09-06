@@ -46,6 +46,8 @@ func (c *Client) do(method, path string, body io.Reader) error {
 		return err
 	}
 
+	req.Header.Set("Authorization", c.token)
+
 	req = req.WithContext(c.context)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
