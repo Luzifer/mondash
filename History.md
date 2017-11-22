@@ -1,3 +1,9 @@
+# 1.10.0 / 2017-11-22
+
+  * Use CDNJS CDN for libraries, update bootstrap and jquery
+  * Meta: Remove old paragraph from README
+  * Meta: Update Dockerfile
+
 # 1.9.0 / 2017-11-22
 
   * Do not use MAD on example dashboard
