@@ -109,8 +109,7 @@
               <span class="label label-info">Current Value: {{ metric.Value }}</span>
               {% endif %}
               {% if !metric.HideMAD %}
-              {{ metric.MadMultiplier }} <abbr title="Median Absolute Deviation">MAD</abbr>
-              above the Median ({{ metric.Median }})
+              <abbr title="Median Absolute Deviation">MAD</abbr>: {{ metric.MadMultiplier }} above the Median ({{ metric.Median }})
               {% endif %}
             </span>
             {% if !metric.HideMAD %}
