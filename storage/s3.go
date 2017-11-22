@@ -8,6 +8,7 @@ import (
 	"github.com/Luzifer/mondash/config"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
@@ -19,7 +20,7 @@ type S3Storage struct {
 
 // NewS3Storage instanciates a new S3Storage
 func NewS3Storage(cfg *config.Config) *S3Storage {
-	s3connection := s3.New(&aws.Config{})
+	s3connection := s3.New(session.Must(session.NewSession()))
 	return &S3Storage{
 		s3connection: s3connection,
 		cfg:          cfg,
