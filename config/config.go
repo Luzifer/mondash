@@ -12,7 +12,7 @@ var storageDrivers = []string{"s3", "file"}
 // Config is a storage struct for configuration parameters
 type Config struct {
 	Storage  string `flag:"storage" default:"s3" description:"Storage engine to use"`
-	BaseURL  string `flag:"baseurl" env:"BASE_URL" description:" "The Base-URL the application is running on for example https://mondash.org"`
+	BaseURL  string `flag:"baseurl" env:"BASE_URL" description:"The Base-URL the application is running on for example https://mondash.org"`
 	APIToken string `flag:"api-token" env:"API_TOKEN" description:"API Token used for the /welcome dashboard (you can choose your own)"`
 
 	Listen string `flag:"listen" default:":3000" description:"Address to listen on"`
