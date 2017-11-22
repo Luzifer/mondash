@@ -42,7 +42,7 @@ func handleDisplayDashboard(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	sort.Sort(sort.Reverse(dashboardMetrics(metrics)))
+	sort.Sort(sort.Reverse(metrics))
 	renderTemplate("dashboard.html", pongo2.Context{
 		"dashid":  params["dashid"],
 		"metrics": metrics,
