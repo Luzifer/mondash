@@ -1,3 +1,8 @@
+# 1.10.1 / 2017-11-22
+
+  * Fix: Replace URL of my private page
+  * Fix: MAD is no unit, put the abbr in front of the metric
+
 # 1.10.0 / 2017-11-22
 
   * Use CDNJS CDN for libraries, update bootstrap and jquery
