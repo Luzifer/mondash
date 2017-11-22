@@ -1,9 +1,11 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/Luzifer/mondash)](https://goreportcard.com/report/github.com/Luzifer/mondash)
+![](https://badges.fyi/github/license/Luzifer/mondash)
+![](https://badges.fyi/github/downloads/Luzifer/mondash)
+![](https://badges.fyi/github/latest-release/Luzifer/mondash)
+
 # Luzifer / mondash
 
-MonDash is a service for everyone having to display monitoring results to people who have not
-the time or knowledge to get familar with Nagios / Icinga or similar monitoring systems. Therefore
-MonDash provides a [simple API](http://docs.mondash.apiary.io/) to submit monitoring results and a
-simple dashboard to view those results.
+MonDash is a service for everyone having to display monitoring results to people who have not the time or knowledge to get familar with Nagios / Icinga or similar monitoring systems. Therefore MonDash provides a [simple API](http://docs.mondash.apiary.io/) to submit monitoring results and a simple dashboard to view those results.
 
 ## Hosted
 
@@ -11,9 +13,11 @@ There is an instance of MonDash running on [mondash.org](https://mondash.org/) y
 
 ## Installation
 
-However maybe you want to use MonDash for data you don't like to have public visible on the internet. As it is open source you also can host your own instance: The most simple way to install your own instance is to download a binary distribution on [gobuild.luzifer.io](http://gobuild.luzifer.io/github.com/Luzifer/mondash).
+However maybe you want to use MonDash for data you don't like to have public visible on the internet. As it is open source you also can host your own instance: The most simple way to install your own instance is to download a binary distribution from the [releases page](https://github.com/Luzifer/mondash/releases).
 
 This archive will contain the binary you need to run your own instance and the template used for the display. If you want just edit the template, restart the daemon and you're done customizing MonDash. If you do so please do me one small favor: Include a hint to this repository / my instance.
+
+Additionally you will need a template for your dashboard to be displayed correctly. You can get the template from this repository in the `templates` folder. The template will be searched in a folder called `templates` inside the current working directory.
 
 To start MonDash you will need to make sure you configured your instance correctly:
 
