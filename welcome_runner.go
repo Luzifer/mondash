@@ -32,6 +32,7 @@ func runWelcomePage(cfg *config.Config) {
 			beer := dashboardMetric{
 				Title:       "Amount of beer in the fridge",
 				Description: fmt.Sprintf("Currently there are %d bottles of beer in the fridge", beers),
+				IgnoreMAD:   true,
 				Status:      status,
 				Expires:     86400,
 				Freshness:   120,
