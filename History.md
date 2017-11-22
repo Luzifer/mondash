@@ -1,3 +1,15 @@
+# 1.9.0 / 2017-11-22
+
+  * Do not use MAD on example dashboard
+  * Extract required filter from pongo2-addons
+  * Switch to dep for vendoring, update libraries
+  * Fix: Description for BaseURL was broken
+  * Fix: Initialization of s3 object needed adjustment
+  * Fix: Welcome dashboard contains no metrics for 1m
+  * Lint: Remove not required conversion
+  * Meta: Add automated asset building for Github
+  * Meta: Replace license stub with full license text
+
 # 1.8.1 / 2016-09-06
 
   * Fix: Use type Status instead of string
