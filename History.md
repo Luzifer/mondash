@@ -1,3 +1,7 @@
+# 1.10.2 / 2017-11-24
+
+  * Fix: Sorting was unstable
+
 # 1.10.1 / 2017-11-22
 
   * Fix: Replace URL of my private page
