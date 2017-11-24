@@ -1,3 +1,7 @@
+# 1.11.0 / 2017-11-24
+
+  * Add option to hide value on dashboard
+
 # 1.10.2 / 2017-11-24
 
   * Fix: Sorting was unstable
