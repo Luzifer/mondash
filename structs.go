@@ -50,7 +50,7 @@ type dashboardMetrics []*dashboardMetric
 func (a dashboardMetrics) Len() int      { return len(a) }
 func (a dashboardMetrics) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a dashboardMetrics) Less(i, j int) bool {
-	return a[i].HistoricalData[0].Time.Before(a[j].HistoricalData[0].Time)
+	return a[i].Meta.LastUpdate.Before(a[j].Meta.LastUpdate)
 }
 
 type dashboardMetric struct {
