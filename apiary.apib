@@ -74,6 +74,7 @@ This API controls the metrics on your dashboard
         + freshness: 3600 (optional, number) - Time in seconds when to switch to `Unkown` state of there is no update (Valid: `0 < x < 604800`)
         + ignore_mad: false (optional, boolean) - If set to true the status passed in the update will be used instead of the median absolute deviation
         + hide_mad: false (optional, boolean) - If set to true the median absolute deviation is hidden on the dashboard for this metric
+        + hide_value: false (optional, boolean) - If set to true the current value will not be shown on the dashboard (useful for checks not having values)
 
 + Response 200 (text/plain)
 
