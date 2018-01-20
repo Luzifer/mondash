@@ -118,6 +118,10 @@ type PostMetricInput struct {
 	// If set to true the median absolute deviation is hidden on the dashboard for this metric
 	// Default: false
 	HideMAD bool `json:"hide_mad,omitempty"`
+
+	// If set to true the value of the metric is not shown on the dashboard
+	// Default: false
+	HideValue bool `json:"hide_value,omitempty"`
 }
 
 func (p *PostMetricInput) validate() error {
