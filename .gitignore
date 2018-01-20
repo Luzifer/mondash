@@ -2,3 +2,4 @@ gin-bin
 mondash
 *.sh
 data
+cmd/mondash-nagios/mondash-nagios
