@@ -1,3 +1,9 @@
+# 1.13.0 / 2018-04-08
+
+  * Change progress bar behavior:  
+    _Instead of just showing three bars with different colors which is quite useless overall now segments of the progress bar are generated according to the state of the check at the corresponding point of time. The effect is the viewer can see how recently the status was triggered instead just seeing a percentage._
+
+
 # 1.12.0 / 2018-01-20
 
   * Add mondash-nagios wrapper
