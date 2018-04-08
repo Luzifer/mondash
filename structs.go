@@ -274,3 +274,54 @@ func (dm *dashboardMetric) IsValid() (bool, string) {
 
 	return true, ""
 }
+
+type historyBarSegment struct {
+	Duration   time.Duration
+	End        time.Time
+	Percentage float64
+	Start      time.Time
+	Status     string
+}
+
+func (dm dashboardMetric) GetHistoryBar() []historyBarSegment {
+	var (
+		point     dashboardMetricStatus
+		segLength int
+		segments  = []historyBarSegment{}
+		segStart  time.Time
+		status    = "Unknown"
+	)
+
+	for _, point = range dm.HistoricalData {
+		if point.Status == status {
+			segLength++
+			continue
+		}
+
+		// Store the old segment
+		if segLength > 0 {
+			segments = append(segments, historyBarSegment{
+				Duration:   point.Time.Sub(segStart),
+				End:        point.Time,
+				Percentage: float64(segLength) / float64(len(dm.HistoricalData)),
+				Start:      segStart,
+				Status:     status,
+			})
+		}
+
+		// Start a new segment
+		segLength = 1
+		segStart = point.Time
+		status = point.Status
+	}
+
+	segments = append(segments, historyBarSegment{
+		Duration:   point.Time.Sub(segStart),
+		End:        point.Time,
+		Percentage: float64(segLength) / float64(len(dm.HistoricalData)),
+		Start:      segStart,
+		Status:     status,
+	})
+
+	return segments
+}

@@ -140,12 +140,19 @@
           </div>
           <div class="col-md-3 hidden-xs">
             <div class="progress">
-              <div class="progress-bar progress-bar-success" style="width: {{ metric.Meta.PercOK }}%">
+              {% for seg in metric.GetHistoryBar %}
+              <div class="progress-bar
+                          {% if seg.Status == "OK" %}progress-bar-success
+                          {% elif seg.Status == "Warning" %}progress-bar-warning
+                          {% elif seg.Status == "Critical" %}progress-bar-danger
+                          {% else %}progress-bar-info
+                          {% endif %}"
+                   style="width: {{ seg.Percentage * 100 }}%"
+                   data-toggle="tooltip" data-placement="bottom"
+                   title="Start: {{ seg.Start|time:"2006-01-02 15:04:05" }}<br>End: {{ seg.End|time:"2006-01-02 15:04:05" }}"
+              >
               </div>
-              <div class="progress-bar progress-bar-warning" style="width: {{ metric.Meta.PercWarn }}%">
-              </div>
-              <div class="progress-bar progress-bar-danger" style="width: {{ metric.Meta.PercCrit }}%">
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -160,5 +167,13 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+    <script>
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+          container: 'body',
+          html: true,
+        });
+      });
+    </script>
   </body>
 </html>
