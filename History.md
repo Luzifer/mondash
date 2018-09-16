@@ -1,3 +1,7 @@
+# 1.14.2 / 2018-09-16
+
+  * Fix: Store StalenessStatus on metrics update
+
 # 1.14.1 / 2018-09-16
 
   * Fix: Template dir missing in Image
