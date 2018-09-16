@@ -107,7 +107,7 @@ type PostMetricInput struct {
 	// Default: `604800`
 	Expires int64 `json:"expires,omitempty"`
 
-	// Time in seconds when to switch to `Unkown` state of there is no update (Valid: `0 < x < 604800`)
+	// Time in seconds when to switch to stale state of there is no update (Valid: `0 < x < 604800`)
 	// Default: 3600
 	Freshness int64 `json:"freshness,omitempty"`
 
@@ -122,6 +122,10 @@ type PostMetricInput struct {
 	// If set to true the value of the metric is not shown on the dashboard
 	// Default: false
 	HideValue bool `json:"hide_value,omitempty"`
+
+	// If set this status will be set when the metric gets stale (no updates within freshness time range
+	// Default: "Unknown"
+	StalenessStatus string `json:"staleness_status,omitifempty"`
 }
 
 func (p *PostMetricInput) validate() error {

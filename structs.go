@@ -11,6 +11,8 @@ import (
 	"github.com/Luzifer/mondash/storage"
 )
 
+const defaultStalenessStatus = "Unknown"
+
 type dashboard struct {
 	DashboardID string           `json:"-"`
 	APIKey      string           `json:"api_key"`
@@ -54,18 +56,19 @@ func (a dashboardMetrics) Less(i, j int) bool {
 }
 
 type dashboardMetric struct {
-	MetricID       string                 `json:"id"`
-	Title          string                 `json:"title"`
-	Description    string                 `json:"description"`
-	Status         string                 `json:"status"`
-	Value          float64                `json:"value,omitifempty"`
-	Expires        int64                  `json:"expires,omitifempty"`
-	Freshness      int64                  `json:"freshness,omitifempty"`
-	IgnoreMAD      bool                   `json:"ignore_mad"`
-	HideMAD        bool                   `json:"hide_mad"`
-	HideValue      bool                   `json:"hide_value"`
-	HistoricalData dashboardMetricHistory `json:"history,omitifempty"`
-	Meta           dashboardMetricMeta    `json:"meta,omitifempty"`
+	MetricID        string                 `json:"id"`
+	Title           string                 `json:"title"`
+	Description     string                 `json:"description"`
+	Status          string                 `json:"status"`
+	Value           float64                `json:"value,omitifempty"`
+	Expires         int64                  `json:"expires,omitifempty"`
+	Freshness       int64                  `json:"freshness,omitifempty"`
+	IgnoreMAD       bool                   `json:"ignore_mad"`
+	HideMAD         bool                   `json:"hide_mad"`
+	HideValue       bool                   `json:"hide_value"`
+	HistoricalData  dashboardMetricHistory `json:"history,omitifempty"`
+	Meta            dashboardMetricMeta    `json:"meta,omitifempty"`
+	StalenessStatus string                 `json:"staleness_status,omitifempty"`
 }
 
 type dashboardMetricStatus struct {
@@ -86,7 +89,7 @@ type dashboardMetricHistory []dashboardMetricStatus
 
 func newDashboardMetric() *dashboardMetric {
 	return &dashboardMetric{
-		Status:         "Unknown",
+		Status:         defaultStalenessStatus,
 		Expires:        604800,
 		Freshness:      3600,
 		HistoricalData: dashboardMetricHistory{},
@@ -171,7 +174,10 @@ func (dm *dashboardMetric) StatisticalStatus() string {
 
 func (dm *dashboardMetric) PreferredStatus() string {
 	if dm.Meta.LastUpdate.Before(time.Now().Add(-1 * time.Duration(dm.Freshness) * time.Second)) {
-		return "Unknown"
+		if dm.StalenessStatus == "" {
+			return defaultStalenessStatus
+		}
+		return dm.StalenessStatus
 	}
 
 	if dm.IgnoreMAD {
@@ -289,7 +295,7 @@ func (dm dashboardMetric) GetHistoryBar() []historyBarSegment {
 		segLength int
 		segments  = []historyBarSegment{}
 		segStart  time.Time
-		status    = "Unknown"
+		status    = defaultStalenessStatus
 	)
 
 	for _, point = range dm.HistoricalData {
