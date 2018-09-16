@@ -1,3 +1,10 @@
+# 1.14.0 / 2018-09-16
+
+  * Update documentation to reflect staleness\_status
+  * Update Dockerfile to reduce image size
+  * Update repo-runner image
+  * Add support for different stale status than Unknown
+
 # 1.13.0 / 2018-04-08
 
   * Change progress bar behavior:  
