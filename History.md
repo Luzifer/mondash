@@ -1,3 +1,7 @@
+# 1.14.1 / 2018-09-16
+
+  * Fix: Template dir missing in Image
+
 # 1.14.0 / 2018-09-16
 
   * Update documentation to reflect staleness\_status
