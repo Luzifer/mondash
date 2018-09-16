@@ -225,6 +225,7 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.IgnoreMAD = m.IgnoreMAD
 	dm.HideMAD = m.HideMAD
 	dm.HideValue = m.HideValue
+	dm.StalenessStatus = m.StalenessStatus
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
 	}
