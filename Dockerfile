@@ -15,7 +15,9 @@ RUN set -ex \
  && apk --no-cache add ca-certificates
 
 COPY --from=builder /go/bin/mondash /usr/local/bin/mondash
+COPY --from=builder /go/src/github.com/Luzifer/mondash/templates /usr/local/share/mondash/templates
 
+WORKDIR /usr/local/share/mondash
 EXPOSE 3000
 
 ENTRYPOINT ["/usr/local/bin/mondash"]
