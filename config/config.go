@@ -1,8 +1,9 @@
 package config
 
 import (
-	"log"
 	"net/url"
+
+	"github.com/pkg/errors"
 
 	"github.com/Luzifer/rconfig"
 )
@@ -27,13 +28,21 @@ type Config struct {
 }
 
 // Load parses arguments / ENV variable to load configuration
-func Load() *Config {
+func Load() (*Config, error) {
 	cfg := &Config{}
-	rconfig.Parse(cfg)
-	return cfg
+
+	if err := rconfig.Parse(cfg); err != nil {
+		return nil, errors.Wrap(err, "Unable to parse CLI config")
+	}
+
+	if err := cfg.isValid(); err != nil {
+		return nil, errors.Wrap(err, "CLI config does not validate")
+	}
+
+	return cfg, nil
 }
 
-func (c Config) isValid() bool {
+func (c Config) isValid() error {
 	// Storage Driver check
 	validStoragedriver := false
 	for _, d := range storageDrivers {
@@ -43,21 +52,18 @@ func (c Config) isValid() bool {
 		}
 	}
 	if !validStoragedriver {
-		log.Printf("You specified a wrong storage driver: %s\n\n", c.Storage)
-		return false
+		return errors.Errorf("Storage driver %q is unknown", c.Storage)
 	}
 
 	// Minimum characters of API token
 	if len(c.APIToken) < 10 {
-		log.Printf("You need to specify an api-token with more than 9 characters.\n\n")
-		return false
+		return errors.New("API-Token needs to have at least 10 characters")
 	}
 
 	// Base-URL check
 	if _, err := url.Parse(c.BaseURL); err != nil {
-		log.Printf("The baseurl '%s' does not look like a valid URL: %s.\n\n", c.BaseURL, err)
-		return false
+		return errors.Wrapf(err, "The baseurl %q is not a valid URL", c.BaseURL)
 	}
 
-	return true
+	return nil
 }

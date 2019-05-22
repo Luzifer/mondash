@@ -30,7 +30,11 @@ func main() {
 	preloadTemplates()
 
 	var err error
-	cfg = config.Load()
+
+	if cfg, err = config.Load(); err != nil {
+		log.WithError(err).Fatal("Unable to load config")
+	}
+
 	if store, err = storage.GetStorage(cfg); err != nil {
 		log.WithError(err).Fatal("Unable to load storage handler")
 	}
@@ -58,7 +62,9 @@ func main() {
 
 	go runWelcomePage(cfg)
 
-	http.ListenAndServe(cfg.Listen, r)
+	if err := http.ListenAndServe(cfg.Listen, r); err != nil {
+		log.WithError(err).Fatal("HTTP server ended unexpectedly")
+	}
 }
 
 func genericHeader(h http.Handler) http.Handler {

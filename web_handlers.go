@@ -123,7 +123,11 @@ func handleDisplayDashboardJSON(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
-	json.NewEncoder(w).Encode(response)
+
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		log.WithError(err).Error("Unable to encode API JSON")
+		http.Error(w, "Unable to encode JSON", http.StatusInternalServerError)
+	}
 }
 
 func handleDeleteDashboard(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +158,12 @@ func handleDeleteDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	store.Delete(vars["dashid"])
+	if err = store.Delete(vars["dashid"]); err != nil {
+		log.WithError(err).WithField("dashboard_id", vars["dashid"]).Error("Unable to delete dashboard")
+		http.Error(w, "Failed to delete dashboard", http.StatusInternalServerError)
+		return
+	}
+
 	http.Error(w, "OK", http.StatusOK)
 }
 
