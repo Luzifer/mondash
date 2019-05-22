@@ -1,4 +1,4 @@
-package config // import "github.com/Luzifer/mondash/config"
+package config
 
 import (
 	"log"
@@ -18,7 +18,7 @@ type Config struct {
 	Listen string `flag:"listen" default:":3000" description:"Address to listen on"`
 
 	S3 struct {
-		Bucket string `flag:"s3Bucket" env:"S3Bucket" "Bucket to use for S3 storage"`
+		Bucket string `flag:"s3Bucket" env:"S3Bucket" description:"Bucket to use for S3 storage"`
 	}
 
 	FileStorage struct {

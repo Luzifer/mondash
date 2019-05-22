@@ -4,23 +4,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/Luzifer/mondash/config"
 )
 
 func runWelcomePage(cfg *config.Config) {
-	baseURL := cfg.BaseURL
-	welcomeAPIToken := cfg.APIToken
-	generateTicker := time.NewTicker(time.Minute)
+	var (
+		baseURL         = cfg.BaseURL
+		welcomeAPIToken = cfg.APIToken
+	)
 
-	// Do one initial push on start
-	postWelcomeMetric(baseURL, welcomeAPIToken)
-
-	for range generateTicker.C {
+	for tick := time.NewTicker(time.Minute); ; <-tick.C {
 		postWelcomeMetric(baseURL, welcomeAPIToken)
 	}
 }
@@ -45,18 +44,22 @@ func postWelcomeMetric(baseURL, welcomeAPIToken string) {
 		Value:       float64(beers),
 	}
 
-	body, err := json.Marshal(beer)
-	if err != nil {
-		log.Println(err)
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(beer); err != nil {
+		log.WithError(err).Error("Unable to marshal dashboard metric")
 		return
 	}
+
 	url := fmt.Sprintf("%s/welcome/beer_available", baseURL)
-	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(body))
+	req, _ := http.NewRequest(http.MethodPut, url, body)
 	req.Header.Add("Authorization", welcomeAPIToken)
+
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Printf("[WelcomeRunner] %s", err)
+		log.WithError(err).Error("Unable to put welcome-runner metric")
 		return
 	}
 	resp.Body.Close()
+
+	log.Debug("Successfully put welcome-runner metric")
 }

@@ -1,10 +1,11 @@
-package storage // import "github.com/Luzifer/mondash/storage"
+package storage
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/Luzifer/mondash/config"
 )
@@ -19,8 +20,7 @@ func NewFileStorage(cfg *config.Config) *FileStorage {
 	// Create directory if not exists
 	if _, err := os.Stat(cfg.FileStorage.Directory); os.IsNotExist(err) {
 		if err := os.MkdirAll(cfg.FileStorage.Directory, 0700); err != nil {
-			fmt.Printf("Could not create storage directory '%s'", cfg.FileStorage.Directory)
-			os.Exit(1)
+			log.WithError(err).Fatal("Could not create storage directory")
 		}
 	}
 

@@ -1,7 +1,9 @@
-package storage // import "github.com/Luzifer/mondash/storage"
+package storage
 
 import (
 	"fmt"
+
+	"github.com/pkg/errors"
 
 	"github.com/Luzifer/mondash/config"
 )
@@ -12,16 +14,6 @@ type Storage interface {
 	Get(dashboardID string) ([]byte, error)
 	Delete(dashboardID string) error
 	Exists(dashboardID string) (bool, error)
-}
-
-// AdapterNotFoundError is a named error for more simple determination which
-// type of error is thrown
-type AdapterNotFoundError struct {
-	Name string
-}
-
-func (e AdapterNotFoundError) Error() string {
-	return fmt.Sprintf("Storage '%s' not found.", e.Name)
 }
 
 // DashboardNotFoundError signalizes the requested dashboard could not be found
@@ -43,5 +35,5 @@ func GetStorage(cfg *config.Config) (Storage, error) {
 		return NewFileStorage(cfg), nil
 	}
 
-	return nil, AdapterNotFoundError{cfg.Storage}
+	return nil, errors.Errorf("Storage %q not found", cfg.Storage)
 }

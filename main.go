@@ -4,14 +4,16 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
-	"github.com/Luzifer/mondash/config"
-	"github.com/Luzifer/mondash/storage"
 	"github.com/flosch/pongo2"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
+
+	httphelper "github.com/Luzifer/go_helpers/http"
+	"github.com/Luzifer/mondash/config"
+	"github.com/Luzifer/mondash/storage"
 
 	_ "github.com/Luzifer/mondash/filters"
 )
@@ -29,12 +31,14 @@ func main() {
 
 	var err error
 	cfg = config.Load()
-	store, err = storage.GetStorage(cfg)
-	if err != nil {
-		fmt.Printf("An error occurred while loading the storage handler: %s", err)
+	if store, err = storage.GetStorage(cfg); err != nil {
+		log.WithError(err).Fatal("Unable to load storage handler")
 	}
 
 	r := mux.NewRouter()
+	r.Use(genericHeader)
+	r.Use(httphelper.NewHTTPLogHandler)
+
 	r.HandleFunc("/", handleRedirectWelcome).
 		Methods("GET")
 	r.HandleFunc("/create", handleCreateRandomDashboard).
@@ -54,21 +58,12 @@ func main() {
 
 	go runWelcomePage(cfg)
 
-	http.Handle("/", logHTTPRequest(r))
-	http.ListenAndServe(cfg.Listen, nil)
+	http.ListenAndServe(cfg.Listen, r)
 }
 
-func logHTTPRequest(h http.Handler) http.Handler {
+func genericHeader(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, r *http.Request) {
-		start := time.Now().UnixNano()
-		w := NewLogResponseWriter(res)
-
-		w.Header().Set("X-Application-Version", version)
-
-		h.ServeHTTP(w, r)
-
-		d := (time.Now().UnixNano() - start) / 1000
-		log.Printf("%s %s %d %dµs %dB\n", r.Method, r.URL.Path, w.Status, d, w.Size)
+		res.Header().Set("X-Application-Version", version)
 	})
 }
 

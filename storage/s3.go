@@ -1,15 +1,16 @@
-package storage // import "github.com/Luzifer/mondash/storage"
+package storage
 
 import (
 	"bytes"
 	"io/ioutil"
 	"strings"
 
-	"github.com/Luzifer/mondash/config"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+
+	"github.com/Luzifer/mondash/config"
 )
 
 // S3Storage is a storage adapter storing the data into single S3 files
