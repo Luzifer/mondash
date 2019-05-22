@@ -40,8 +40,11 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.Use(genericHeader)
-	r.Use(httphelper.NewHTTPLogHandler)
+	r.Use( // "Applied in order they are specified"
+		genericHeader,
+		httphelper.GzipHandler,
+		httphelper.NewHTTPLogHandler,
+	)
 
 	r.HandleFunc("/", handleRedirectWelcome).
 		Methods("GET")
