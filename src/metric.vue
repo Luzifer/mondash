@@ -26,7 +26,7 @@
             </span>
           </span>
           <small class="text-muted">
-            Updated {{ moment(metric.last_update).fromNow() }}
+            <span v-b-tooltip.hover :title="moment(metric.last_update).format('lll')">Updated {{ moment(metric.last_update).fromNow() }}</span>
             <span v-if="metric.status !== 'OK'"> (Last OK {{ moment(metric.last_ok).fromNow() }})</span>
           </small>
         </div>
