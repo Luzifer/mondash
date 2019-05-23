@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -146,6 +147,8 @@ func handleDisplayDashboardJSON(w http.ResponseWriter, r *http.Request) {
 			}))
 		}
 	}
+
+	sort.Slice(response.Metrics, func(j, i int) bool { return response.Metrics[i].LastUpdate.Before(response.Metrics[j].LastUpdate) })
 
 	if len(response.Metrics) == 0 {
 		response.APIKey = dash.APIKey
