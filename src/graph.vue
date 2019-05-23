@@ -14,11 +14,11 @@ export default {
     data() {
       const vh = this.metric.value_history
 
-      let labels = []
-      let series = []
+      const labels = []
+      const series = []
 
       for (const k of Object.keys(vh)) {
-        labels.push(moment(k*1000).format('lll'))
+        labels.push(moment(k * 1000).format('lll'))
         series.push(vh[k])
       }
 

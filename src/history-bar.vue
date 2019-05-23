@@ -24,10 +24,10 @@ export default {
 
     variantFromStatus(status) {
       return {
-        "OK": "success",
-        "Warning": "warning",
-        "Critical": "danger",
-        "Unknown": "info",
+        OK: 'success',
+        Warning: 'warning',
+        Critical: 'danger',
+        Unknown: 'info',
       }[status]
     },
   },

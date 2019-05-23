@@ -92,7 +92,7 @@ export default {
       }
 
       const levels = ['OK', 'Warning', 'Critical', 'Unknown']
-      let metrics = []
+      const metrics = []
 
       for (const metric of this.metrics) {
         // Filter by level
