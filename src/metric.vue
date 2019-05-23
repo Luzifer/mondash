@@ -1,5 +1,5 @@
 <template>
-  <b-row>
+  <b-row class="mb-2">
     <b-col>
       <b-card :border-variant="variantFromStatus(metric.status)">
 
@@ -26,7 +26,7 @@
             </span>
           </span>
           <small class="text-muted">
-            Updated {{ moment(metric.last_updated).fromNow() }}
+            Updated {{ moment(metric.last_update).fromNow() }}
             <span v-if="metric.status !== 'OK'"> (Last OK {{ moment(metric.last_ok).fromNow() }})</span>
           </small>
         </div>
