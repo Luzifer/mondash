@@ -1,5 +1,5 @@
 <template>
-  <b-row class="mb-2">
+  <b-row class="mb-3">
     <b-col>
       <b-card :border-variant="variantFromStatus(metric.status)">
 
