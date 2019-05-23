@@ -73,7 +73,13 @@ func loadDashboard(dashid string, store storage.Storage) (*dashboard, error) {
 		storage:     store,
 	}
 
-	return tmp, errors.Wrap(json.Unmarshal(data, tmp), "Unable to unmarshal dashboard")
+	if err := json.Unmarshal(data, tmp); err != nil {
+		return nil, errors.Wrap(err, "Unable to unmarshal dashboard")
+	}
+
+	tmp.migrate() // Do a load-migration, it will be applied on save
+
+	return tmp, nil
 }
 
 func (d *dashboard) Save() error {
@@ -83,6 +89,21 @@ func (d *dashboard) Save() error {
 	}
 
 	return errors.Wrap(d.storage.Put(d.DashboardID, data), "Unable to store dashboard")
+}
+
+func (d *dashboard) migrate() {
+	// Migrate metadata
+	for _, m := range d.Metrics {
+		if m.Meta.LastUpdate.IsZero() && !m.Meta.MIGLastUpdate.IsZero() {
+			m.Meta.LastUpdate = m.Meta.MIGLastUpdate
+			m.Meta.MIGLastUpdate = time.Time{}
+		}
+
+		if m.Meta.LastOK.IsZero() && !m.Meta.MIGLastOK.IsZero() {
+			m.Meta.LastOK = m.Meta.MIGLastOK
+			m.Meta.MIGLastOK = time.Time{}
+		}
+	}
 }
 
 // --- Dashboard Metric ---
@@ -115,6 +136,9 @@ type dashboardMetricMeta struct {
 	PercOK     float64   `json:"perc_ok"`
 	PercWarn   float64   `json:"perc_warn"`
 	PercCrit   float64   `json:"perc_crit"`
+
+	MIGLastUpdate time.Time `json:"LastUpdate,omitempty"`
+	MIGLastOK     time.Time `json:"LastOK,omitempty"`
 }
 
 func newDashboardMetric() *dashboardMetric {
