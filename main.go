@@ -96,7 +96,6 @@ func main() {
 
 func genericHeader(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, r *http.Request) {
-		res.Header().Set("Cache-Control", "no-cache") // FIXME: DEBUGGING
 		res.Header().Set("X-Application-Version", version)
 		h.ServeHTTP(res, r)
 	})
