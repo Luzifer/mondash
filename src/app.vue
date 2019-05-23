@@ -12,6 +12,7 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
+          <b-nav-item @click="show_filters = !show_filters">Toggle Filters</b-nav-item>
           <b-nav-item href="/create">Get your own dashboard</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
@@ -41,7 +42,26 @@
         </b-col>
       </b-row>
 
-      <metric v-for="metric in metrics" :metric="metric" :key="metric.id"></metric>
+      <b-row v-if="show_filters" class="mb-4">
+        <b-col>
+          <b-card bg-variant="primary" text-variant="white">
+            <b-row>
+              <b-col cols="8">
+                <b-form-group label="Filter by text:">
+                  <b-form-input v-model="filter_text" placeholder="Filter metrics by title / description"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group label="Filter by status:">
+                  <b-form-select v-model="level_filter" :options="level_filters"></b-form-select>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-card>
+        </b-col>
+      </b-row>
+
+      <metric v-for="metric in filtered_metrics" :metric="metric" :key="metric.id"></metric>
 
     </b-container>
   </div>
@@ -63,6 +83,36 @@ export default {
       return window.location.pathname.substr(1)
     },
 
+    filtered_metrics() {
+      const filter_text = this.filter_text.toLowerCase()
+
+      if (filter_text === '' && this.level_filter === 3) {
+        // No-filter: Don't waste resources
+        return this.metrics
+      }
+
+      const levels = ['OK', 'Warning', 'Critical', 'Unknown']
+      let metrics = []
+
+      for (const metric of this.metrics) {
+        // Filter by level
+        if (levels.indexOf(metric.status) < this.level_filter && this.level_filter !== 3) {
+          // Level is lower than selected and selected is not "ALL"
+          continue
+        }
+
+        // Filter by text
+        if (filter_text !== '' && metric.title.toLowerCase().indexOf(filter_text) < 0 && metric.description.toLowerCase().indexOf(filter_text) < 0) {
+          // Neither title nor description contained filter but filter was set
+          continue
+        }
+
+        metrics.push(metric)
+      }
+
+      return metrics
+    },
+
     location() {
       return window.location.href
     },
@@ -71,7 +121,16 @@ export default {
   data() {
     return {
       api_key: null,
+      filter_text: '',
+      level_filter: 3,
+      level_filters: [
+        { value: 3, text: 'Unknown, OK, Warning, Critical' },
+        { value: 0, text: 'OK, Warning, Critical' },
+        { value: 1, text: 'Warning, Critical' },
+        { value: 2, text: 'Critical' },
+      ],
       metrics: [],
+      show_filters: false,
     }
   },
 
@@ -96,6 +155,3 @@ export default {
   },
 }
 </script>
-
-<style>
-</style>
