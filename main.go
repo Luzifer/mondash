@@ -13,8 +13,6 @@ import (
 	httphelper "github.com/Luzifer/go_helpers/http"
 	"github.com/Luzifer/mondash/storage"
 	"github.com/Luzifer/rconfig"
-
-	_ "github.com/Luzifer/mondash/filters"
 )
 
 var (
