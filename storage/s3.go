@@ -3,37 +3,39 @@ package storage
 import (
 	"bytes"
 	"io/ioutil"
+	"net/url"
+	"path"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/Luzifer/mondash/config"
 )
 
 // S3Storage is a storage adapter storing the data into single S3 files
 type S3Storage struct {
 	s3connection *s3.S3
-	cfg          *config.Config
+	bucket       string
+	prefix       string
 }
 
 // NewS3Storage instanciates a new S3Storage
-func NewS3Storage(cfg *config.Config) *S3Storage {
+func NewS3Storage(uri *url.URL) *S3Storage {
 	s3connection := s3.New(session.Must(session.NewSession()))
 	return &S3Storage{
 		s3connection: s3connection,
-		cfg:          cfg,
+		bucket:       uri.Host,
+		prefix:       uri.Path,
 	}
 }
 
 // Put writes the given data to S3
 func (s *S3Storage) Put(dashboardID string, data []byte) error {
 	_, err := s.s3connection.PutObject(&s3.PutObjectInput{
-		Bucket:      aws.String(s.cfg.S3.Bucket),
+		Bucket:      aws.String(s.bucket),
 		ContentType: aws.String("application/json"),
-		Key:         aws.String(dashboardID),
+		Key:         s.getKey(dashboardID),
 		Body:        bytes.NewReader(data),
 		ACL:         aws.String("private"),
 	})
@@ -44,8 +46,8 @@ func (s *S3Storage) Put(dashboardID string, data []byte) error {
 // Get loads the data for the given dashboard from S3
 func (s *S3Storage) Get(dashboardID string) ([]byte, error) {
 	res, err := s.s3connection.GetObject(&s3.GetObjectInput{
-		Bucket: aws.String(s.cfg.S3.Bucket),
-		Key:    aws.String(dashboardID),
+		Bucket: aws.String(s.bucket),
+		Key:    s.getKey(dashboardID),
 	})
 	if err != nil {
 		return nil, err
@@ -64,8 +66,8 @@ func (s *S3Storage) Get(dashboardID string) ([]byte, error) {
 // Delete deletes the given dashboard from S3
 func (s *S3Storage) Delete(dashboardID string) error {
 	_, err := s.s3connection.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(s.cfg.S3.Bucket),
-		Key:    aws.String(dashboardID),
+		Bucket: aws.String(s.bucket),
+		Key:    s.getKey(dashboardID),
 	})
 
 	return err
@@ -74,8 +76,8 @@ func (s *S3Storage) Delete(dashboardID string) error {
 // Exists checks for the existence of the given dashboard
 func (s *S3Storage) Exists(dashboardID string) (bool, error) {
 	_, err := s.s3connection.HeadObject(&s3.HeadObjectInput{
-		Bucket: aws.String(s.cfg.S3.Bucket),
-		Key:    aws.String(dashboardID),
+		Bucket: aws.String(s.bucket),
+		Key:    s.getKey(dashboardID),
 	})
 
 	if err != nil {
@@ -89,4 +91,9 @@ func (s *S3Storage) Exists(dashboardID string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (s S3Storage) getKey(dashboardID string) *string {
+	p := path.Join(s.prefix, dashboardID)
+	return aws.String(strings.TrimLeft(p, "/"))
 }

@@ -1,5 +1,8 @@
+cmd/mondash-nagios/mondash-nagios
+data
+.env
+frontend/app.js
 gin-bin
 mondash
 *.sh
-data
-cmd/mondash-nagios/mondash-nagios
+src/node_modules

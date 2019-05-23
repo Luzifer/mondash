@@ -9,17 +9,15 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/Luzifer/mondash/config"
 )
 
-func runWelcomePage(cfg *config.Config) {
+func runWelcomePage() {
 	var (
 		baseURL         = cfg.BaseURL
 		welcomeAPIToken = cfg.APIToken
 	)
 
-	for tick := time.NewTicker(time.Minute); ; <-tick.C {
+	for tick := time.NewTicker(10 * time.Minute); ; <-tick.C {
 		postWelcomeMetric(baseURL, welcomeAPIToken)
 	}
 }
@@ -40,7 +38,7 @@ func postWelcomeMetric(baseURL, welcomeAPIToken string) {
 		IgnoreMAD:   true,
 		Status:      status,
 		Expires:     86400,
-		Freshness:   120,
+		Freshness:   900,
 		Value:       float64(beers),
 	}
 

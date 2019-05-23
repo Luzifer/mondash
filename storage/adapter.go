@@ -2,10 +2,9 @@ package storage
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/pkg/errors"
-
-	"github.com/Luzifer/mondash/config"
 )
 
 // Storage is an interface to have all storage systems compatible to each other
@@ -27,13 +26,18 @@ func (e DashboardNotFoundError) Error() string {
 
 // GetStorage acts as a storage factory providing the storage named by input
 // name parameter
-func GetStorage(cfg *config.Config) (Storage, error) {
-	switch cfg.Storage {
-	case "s3":
-		return NewS3Storage(cfg), nil
-	case "file":
-		return NewFileStorage(cfg), nil
+func GetStorage(uri string) (Storage, error) {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return nil, errors.Wrap(err, "Invalid storage URI")
 	}
 
-	return nil, errors.Errorf("Storage %q not found", cfg.Storage)
+	switch u.Scheme {
+	case "s3":
+		return NewS3Storage(u), nil
+	case "file":
+		return NewFileStorage(u), nil
+	}
+
+	return nil, errors.Errorf("Storage %q not found", u.Scheme)
 }

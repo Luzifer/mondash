@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/flosch/pongo2"
@@ -12,8 +12,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	httphelper "github.com/Luzifer/go_helpers/http"
-	"github.com/Luzifer/mondash/config"
 	"github.com/Luzifer/mondash/storage"
+	"github.com/Luzifer/rconfig"
 
 	_ "github.com/Luzifer/mondash/filters"
 )
@@ -21,49 +21,73 @@ import (
 var (
 	templates = make(map[string]*pongo2.Template)
 	store     storage.Storage
-	cfg       *config.Config
+	cfg       = struct {
+		APIToken    string `flag:"api-token" env:"API_TOKEN" description:"API Token used for the /welcome dashboard (you can choose your own)"`
+		BaseURL     string `flag:"baseurl" env:"BASE_URL" description:"The Base-URL the application is running on for example https://mondash.org"`
+		FrontendDir string `flag:"frontend-dir" default:"./frontend" description:"Directory to serve frontend assets from"`
+		Storage     string `flag:"storage" default:"file:///./data" description:"Storage engine to use"`
 
-	version string
+		Listen         string `flag:"listen" default:":3000" description:"Address to listen on"`
+		LogLevel       string `flag:"log-level" default:"info" description:"Set log level (debug, info, warning, error)"`
+		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
+	}{}
+
+	version = "dev"
 )
 
-func main() {
-	preloadTemplates()
-
-	var err error
-
-	if cfg, err = config.Load(); err != nil {
-		log.WithError(err).Fatal("Unable to load config")
+func init() {
+	rconfig.AutoEnv(true)
+	if err := rconfig.ParseAndValidate(&cfg); err != nil {
+		log.Fatalf("Unable to parse commandline options: %s", err)
 	}
 
-	if store, err = storage.GetStorage(cfg); err != nil {
+	if l, err := log.ParseLevel(cfg.LogLevel); err == nil {
+		log.SetLevel(l)
+	} else {
+		log.Fatalf("Invalid log level: %s", err)
+	}
+
+	if cfg.VersionAndExit {
+		fmt.Printf("share %s\n", version)
+		os.Exit(0)
+	}
+}
+
+func main() {
+	var err error
+
+	if store, err = storage.GetStorage(cfg.Storage); err != nil {
 		log.WithError(err).Fatal("Unable to load storage handler")
 	}
 
 	r := mux.NewRouter()
-	r.Use( // "Applied in order they are specified"
-		genericHeader,
-		httphelper.GzipHandler,
+	r.Use( // Sort: Outermost to innermost wrapper
 		httphelper.NewHTTPLogHandler,
+		httphelper.GzipHandler,
+		genericHeader,
 	)
 
 	r.HandleFunc("/", handleRedirectWelcome).
-		Methods("GET")
+		Methods(http.MethodGet)
+	r.HandleFunc("/app.js", handleAppJS).
+		Methods(http.MethodGet)
+
 	r.HandleFunc("/create", handleCreateRandomDashboard).
-		Methods("GET")
+		Methods(http.MethodGet)
 	r.HandleFunc("/{dashid}.json", handleDisplayDashboardJSON).
-		Methods("GET")
+		Methods(http.MethodGet)
 	r.HandleFunc("/{dashid}", handleDisplayDashboard).
-		Methods("GET")
+		Methods(http.MethodGet)
 
 	r.HandleFunc("/{dashid}/{metricid}", handlePutMetric).
-		Methods("PUT")
+		Methods(http.MethodPut)
 
 	r.HandleFunc("/{dashid}", handleDeleteDashboard).
-		Methods("DELETE")
+		Methods(http.MethodDelete)
 	r.HandleFunc("/{dashid}/{metricid}", handleDeleteMetric).
-		Methods("DELETE")
+		Methods(http.MethodDelete)
 
-	go runWelcomePage(cfg)
+	go runWelcomePage()
 
 	if err := http.ListenAndServe(cfg.Listen, r); err != nil {
 		log.WithError(err).Fatal("HTTP server ended unexpectedly")
@@ -72,7 +96,9 @@ func main() {
 
 func genericHeader(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, r *http.Request) {
+		res.Header().Set("Cache-Control", "no-cache") // FIXME: DEBUGGING
 		res.Header().Set("X-Application-Version", version)
+		h.ServeHTTP(res, r)
 	})
 }
 
@@ -80,23 +106,4 @@ func generateAPIKey() string {
 	t := time.Now().String()
 	sum := md5.Sum([]byte(t))
 	return fmt.Sprintf("%x", sum)
-}
-
-func renderTemplate(templateName string, context pongo2.Context, res http.ResponseWriter) {
-	if tpl, ok := templates[templateName]; ok {
-		_ = tpl.ExecuteWriter(context, res)
-	} else {
-		res.WriteHeader(http.StatusInternalServerError)
-		_, _ = res.Write([]byte(fmt.Sprintf("Template %s not found!", templateName)))
-	}
-}
-
-func preloadTemplates() {
-	templateNames, err := ioutil.ReadDir("templates")
-	if err != nil {
-		panic("Templates directory not available!")
-	}
-	for _, tplname := range templateNames {
-		templates[tplname.Name()] = pongo2.Must(pongo2.FromFile(fmt.Sprintf("templates/%s", tplname.Name())))
-	}
 }

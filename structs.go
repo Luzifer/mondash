@@ -150,6 +150,12 @@ func (dm dashboardMetric) MedianAbsoluteDeviation() (float64, float64) {
 
 func (dm dashboardMetric) MadMultiplier() float64 {
 	medianValue, MAD := dm.MedianAbsoluteDeviation()
+
+	if MAD == 0 {
+		// Edge-case, causes div-by-zero
+		return 1
+	}
+
 	return math.Abs(dm.Value-medianValue) / MAD
 }
 
@@ -184,6 +190,17 @@ func (dm dashboardMetric) PreferredStatus() string {
 
 	// By default use MAD for status
 	return dm.StatisticalStatus()
+}
+
+func (dm dashboardMetric) HistoricalValueMap() map[int64]float64 {
+	out := map[int64]float64{}
+
+	start := int(math.Max(0, float64(len(dm.HistoricalData)-30)))
+	for _, v := range dm.HistoricalData[start:] {
+		out[v.Time.Unix()] = v.Value
+	}
+
+	return out
 }
 
 func (dm dashboardMetric) LabelHistory() []string {

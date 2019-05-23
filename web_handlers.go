@@ -3,19 +3,84 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"mime"
 	"net/http"
-	"sort"
+	"os"
+	"path"
 	"strings"
 	"time"
 
-	"github.com/flosch/pongo2"
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
-func handleRedirectWelcome(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/welcome", http.StatusTemporaryRedirect)
+type output struct {
+	APIKey  string         `json:"api_key,omitempty"`
+	Metrics []outputMetric `json:"metrics"`
 }
+
+type outputMetricConfig struct {
+	HideMAD   bool `json:"hide_mad"`
+	HideValue bool `json:"hide_value"`
+}
+
+type outputMetric struct {
+	ID            string              `json:"id"`
+	Config        outputMetricConfig  `json:"config"`
+	Description   string              `json:"description"`
+	HistoryBar    []historyBarSegment `json:"history_bar"`
+	LastOK        time.Time           `json:"last_ok"`
+	LastUpdate    time.Time           `json:"last_update"`
+	Median        float64             `json:"median"`
+	MADMultiplier float64             `json:"mad_multiplier"`
+	Status        string              `json:"status"`
+	Title         string              `json:"title"`
+	Value         float64             `json:"value"`
+	ValueHistory  map[int64]float64   `json:"value_history"`
+}
+
+func outputMetricFromMetric(m *dashboardMetric) outputMetric {
+	return outputMetric{
+		ID:            m.MetricID,
+		Description:   m.Description,
+		HistoryBar:    m.GetHistoryBar(),
+		LastOK:        m.Meta.LastOK,
+		LastUpdate:    m.Meta.LastUpdate,
+		Median:        m.Median(),
+		MADMultiplier: m.MadMultiplier(),
+		Status:        m.PreferredStatus(),
+		Title:         m.Title,
+		ValueHistory:  m.HistoricalValueMap(),
+		Value:         m.Value,
+
+		Config: outputMetricConfig{
+			HideMAD:   m.HideMAD,
+			HideValue: m.HideValue,
+		},
+	}
+}
+
+func handleStaticFile(w http.ResponseWriter, r *http.Request, filename string) error {
+	if _, err := os.Stat(path.Join(cfg.FrontendDir, filename)); err == nil {
+		http.ServeFile(w, r, path.Join(cfg.FrontendDir, filename))
+		return nil
+	}
+
+	// File was not found in filesystem, serve from packed assets
+	body, err := Asset(path.Join("frontend", filename))
+	if err != nil {
+		return errors.Wrapf(err, "File %q was neither found in FrontendDir nor in assets", filename)
+	}
+
+	log.WithField("filename", filename).Debug("Static file loaded from assets")
+
+	w.Header().Set("Content-Type", mime.TypeByExtension(filename[strings.LastIndexByte(filename, '.'):]))
+	_, err = w.Write(body)
+	return errors.Wrap(err, "Unable to write body")
+}
+
+func handleAppJS(w http.ResponseWriter, r *http.Request) { handleStaticFile(w, r, "app.js") }
 
 func handleCreateRandomDashboard(w http.ResponseWriter, r *http.Request) {
 	var urlProposal string
@@ -29,40 +94,7 @@ func handleCreateRandomDashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleDisplayDashboard(w http.ResponseWriter, r *http.Request) {
-	var vars = mux.Vars(r)
-
-	dash, err := loadDashboard(vars["dashid"], store)
-	switch err {
-	case nil:
-		// All fine
-
-	case errDashboardNotFound:
-		dash = &dashboard{APIKey: generateAPIKey(), Metrics: []*dashboardMetric{}}
-
-	default:
-		log.WithError(err).
-			WithField("dashboard_id", vars["dashid"]).
-			Error("Unable to load dashboard")
-		http.Error(w, "Could not load dashboard", http.StatusInternalServerError)
-		return
-	}
-
-	// Filter out expired metrics
-	metrics := []*dashboardMetric{}
-	for _, m := range dash.Metrics {
-		if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
-			metrics = append(metrics, m)
-		}
-	}
-
-	sort.Slice(metrics, func(j, i int) bool { return metrics[i].Meta.LastUpdate.Before(metrics[j].Meta.LastUpdate) })
-
-	renderTemplate("dashboard.html", pongo2.Context{
-		"dashid":  vars["dashid"],
-		"metrics": metrics,
-		"apikey":  dash.APIKey,
-		"baseurl": cfg.BaseURL,
-	}, w)
+	handleStaticFile(w, r, "index.html")
 }
 
 func handleDisplayDashboardJSON(w http.ResponseWriter, r *http.Request) {
@@ -84,36 +116,12 @@ func handleDisplayDashboardJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := struct {
-		APIKey  string `json:"api_key,omitempty"`
-		Metrics []struct {
-			ID          string    `json:"id"`
-			Title       string    `json:"title"`
-			Description string    `json:"description"`
-			Status      string    `json:"status"`
-			Value       float64   `json:"value"`
-			LastUpdate  time.Time `json:"last_update"`
-		} `json:"metrics"`
-	}{}
+	response := output{}
 
 	// Filter out expired metrics
 	for _, m := range dash.Metrics {
 		if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
-			response.Metrics = append(response.Metrics, struct {
-				ID          string    `json:"id"`
-				Title       string    `json:"title"`
-				Description string    `json:"description"`
-				Status      string    `json:"status"`
-				Value       float64   `json:"value"`
-				LastUpdate  time.Time `json:"last_update"`
-			}{
-				ID:          m.MetricID,
-				Title:       m.Title,
-				Description: m.Description,
-				Status:      m.PreferredStatus(),
-				Value:       m.Value,
-				LastUpdate:  m.Meta.LastUpdate,
-			})
+			response.Metrics = append(response.Metrics, outputMetricFromMetric(m))
 		}
 	}
 
@@ -161,6 +169,51 @@ func handleDeleteDashboard(w http.ResponseWriter, r *http.Request) {
 	if err = store.Delete(vars["dashid"]); err != nil {
 		log.WithError(err).WithField("dashboard_id", vars["dashid"]).Error("Unable to delete dashboard")
 		http.Error(w, "Failed to delete dashboard", http.StatusInternalServerError)
+		return
+	}
+
+	http.Error(w, "OK", http.StatusOK)
+}
+
+func handleDeleteMetric(w http.ResponseWriter, r *http.Request) {
+	var (
+		token = strings.TrimPrefix(r.Header.Get("Authorization"), "Token ")
+		vars  = mux.Vars(r)
+	)
+
+	dash, err := loadDashboard(vars["dashid"], store)
+	switch err {
+	case nil:
+		// All fine
+
+	case errDashboardNotFound:
+		http.Error(w, "Dashboard not found", http.StatusNotFound)
+		return
+
+	default:
+		log.WithError(err).
+			WithField("dashboard_id", vars["dashid"]).
+			Error("Unable to load dashboard")
+		http.Error(w, "Could not load dashboard", http.StatusInternalServerError)
+		return
+	}
+
+	if dash.APIKey != token {
+		http.Error(w, "APIKey did not match.", http.StatusUnauthorized)
+		return
+	}
+
+	tmp := []*dashboardMetric{}
+	for _, m := range dash.Metrics {
+		if m.MetricID != vars["metricid"] {
+			tmp = append(tmp, m)
+		}
+	}
+	dash.Metrics = tmp
+
+	if err := dash.Save(); err != nil {
+		log.WithError(err).Error("Unable to save dashboard")
+		http.Error(w, "Was not able to save the dashboard", http.StatusInternalServerError)
 		return
 	}
 
@@ -242,47 +295,6 @@ func handlePutMetric(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "OK", http.StatusOK)
 }
 
-func handleDeleteMetric(w http.ResponseWriter, r *http.Request) {
-	var (
-		token = strings.TrimPrefix(r.Header.Get("Authorization"), "Token ")
-		vars  = mux.Vars(r)
-	)
-
-	dash, err := loadDashboard(vars["dashid"], store)
-	switch err {
-	case nil:
-		// All fine
-
-	case errDashboardNotFound:
-		http.Error(w, "Dashboard not found", http.StatusNotFound)
-		return
-
-	default:
-		log.WithError(err).
-			WithField("dashboard_id", vars["dashid"]).
-			Error("Unable to load dashboard")
-		http.Error(w, "Could not load dashboard", http.StatusInternalServerError)
-		return
-	}
-
-	if dash.APIKey != token {
-		http.Error(w, "APIKey did not match.", http.StatusUnauthorized)
-		return
-	}
-
-	tmp := []*dashboardMetric{}
-	for _, m := range dash.Metrics {
-		if m.MetricID != vars["metricid"] {
-			tmp = append(tmp, m)
-		}
-	}
-	dash.Metrics = tmp
-
-	if err := dash.Save(); err != nil {
-		log.WithError(err).Error("Unable to save dashboard")
-		http.Error(w, "Was not able to save the dashboard", http.StatusInternalServerError)
-		return
-	}
-
-	http.Error(w, "OK", http.StatusOK)
+func handleRedirectWelcome(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/welcome", http.StatusTemporaryRedirect)
 }

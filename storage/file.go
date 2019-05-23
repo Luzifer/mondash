@@ -2,30 +2,29 @@ package storage
 
 import (
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/Luzifer/mondash/config"
 )
 
 // FileStorage is a storage adapter storing the data into single local files
 type FileStorage struct {
-	cfg *config.Config
+	storagePath string
 }
 
 // NewFileStorage instanciates a new FileStorage
-func NewFileStorage(cfg *config.Config) *FileStorage {
+func NewFileStorage(uri *url.URL) *FileStorage {
 	// Create directory if not exists
-	if _, err := os.Stat(cfg.FileStorage.Directory); os.IsNotExist(err) {
-		if err := os.MkdirAll(cfg.FileStorage.Directory, 0700); err != nil {
+	if _, err := os.Stat(uri.Path); os.IsNotExist(err) {
+		if err := os.MkdirAll(uri.Path, 0700); err != nil {
 			log.WithError(err).Fatal("Could not create storage directory")
 		}
 	}
 
 	return &FileStorage{
-		cfg: cfg,
+		storagePath: uri.Path,
 	}
 }
 
@@ -70,5 +69,5 @@ func (f *FileStorage) Exists(dashboardID string) (bool, error) {
 }
 
 func (f *FileStorage) getFilePath(dashboardID string) string {
-	return path.Join(f.cfg.FileStorage.Directory, dashboardID+".txt")
+	return path.Join(f.storagePath, dashboardID+".txt")
 }
