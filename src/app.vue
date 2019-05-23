@@ -78,7 +78,7 @@ export default {
   methods: {
     updateDashboardData() {
       const path = window.location.pathname
-      axios.get(`${path}.json`)
+      axios.get(`${path}.json?history_bar=true&value_history=true`)
         .then(resp => {
           this.api_key = resp.data.api_key
           this.metrics = resp.data.metrics

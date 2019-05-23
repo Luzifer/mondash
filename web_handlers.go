@@ -29,7 +29,7 @@ type outputMetric struct {
 	ID            string              `json:"id"`
 	Config        outputMetricConfig  `json:"config"`
 	Description   string              `json:"description"`
-	HistoryBar    []historyBarSegment `json:"history_bar"`
+	HistoryBar    []historyBarSegment `json:"history_bar,omitempty"`
 	LastOK        time.Time           `json:"last_ok"`
 	LastUpdate    time.Time           `json:"last_update"`
 	Median        float64             `json:"median"`
@@ -37,28 +37,42 @@ type outputMetric struct {
 	Status        string              `json:"status"`
 	Title         string              `json:"title"`
 	Value         float64             `json:"value"`
-	ValueHistory  map[int64]float64   `json:"value_history"`
+	ValueHistory  map[int64]float64   `json:"value_history,omitempty"`
 }
 
-func outputMetricFromMetric(m *dashboardMetric) outputMetric {
-	return outputMetric{
-		ID:            m.MetricID,
-		Description:   m.Description,
-		HistoryBar:    m.GetHistoryBar(),
-		LastOK:        m.Meta.LastOK,
-		LastUpdate:    m.Meta.LastUpdate,
-		Median:        m.Median(),
-		MADMultiplier: m.MadMultiplier(),
-		Status:        m.PreferredStatus(),
-		Title:         m.Title,
-		ValueHistory:  m.HistoricalValueMap(),
-		Value:         m.Value,
+type outputMetricFromMetricOpts struct {
+	Metric          *dashboardMetric
+	AddHistoryBar   bool
+	AddValueHistory bool
+}
+
+func outputMetricFromMetric(opts outputMetricFromMetricOpts) outputMetric {
+	out := outputMetric{
+		ID:            opts.Metric.MetricID,
+		Description:   opts.Metric.Description,
+		LastOK:        opts.Metric.Meta.LastOK,
+		LastUpdate:    opts.Metric.Meta.LastUpdate,
+		Median:        opts.Metric.Median(),
+		MADMultiplier: opts.Metric.MadMultiplier(),
+		Status:        opts.Metric.PreferredStatus(),
+		Title:         opts.Metric.Title,
+		Value:         opts.Metric.Value,
 
 		Config: outputMetricConfig{
-			HideMAD:   m.HideMAD,
-			HideValue: m.HideValue,
+			HideMAD:   opts.Metric.HideMAD,
+			HideValue: opts.Metric.HideValue,
 		},
 	}
+
+	if opts.AddHistoryBar {
+		out.HistoryBar = opts.Metric.GetHistoryBar()
+	}
+
+	if opts.AddValueHistory {
+		out.ValueHistory = opts.Metric.HistoricalValueMap()
+	}
+
+	return out
 }
 
 func handleStaticFile(w http.ResponseWriter, r *http.Request, filename string) error {
@@ -116,12 +130,20 @@ func handleDisplayDashboardJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := output{}
+	var (
+		addHistoryBar   = r.URL.Query().Get("history_bar") == "true"
+		addValueHistory = r.URL.Query().Get("value_history") == "true"
+		response        = output{}
+	)
 
 	// Filter out expired metrics
 	for _, m := range dash.Metrics {
 		if m.Meta.LastUpdate.After(time.Now().Add(time.Duration(m.Expires*-1) * time.Second)) {
-			response.Metrics = append(response.Metrics, outputMetricFromMetric(m))
+			response.Metrics = append(response.Metrics, outputMetricFromMetric(outputMetricFromMetricOpts{
+				AddHistoryBar:   addHistoryBar,
+				AddValueHistory: addValueHistory,
+				Metric:          m,
+			}))
 		}
 	}
 
