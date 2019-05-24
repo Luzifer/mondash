@@ -21,7 +21,7 @@ var (
 		APIToken    string `flag:"api-token" env:"API_TOKEN" description:"API Token used for the /welcome dashboard (you can choose your own)"`
 		BaseURL     string `flag:"baseurl" env:"BASE_URL" description:"The Base-URL the application is running on for example https://mondash.org"`
 		FrontendDir string `flag:"frontend-dir" default:"./frontend" description:"Directory to serve frontend assets from"`
-		Storage     string `flag:"storage" default:"file:///./data" description:"Storage engine to use"`
+		Storage     string `flag:"storage" default:"file:///data" description:"Storage engine to use"`
 
 		Listen         string `flag:"listen" default:":3000" description:"Address to listen on"`
 		LogLevel       string `flag:"log-level" default:"info" description:"Set log level (debug, info, warning, error)"`

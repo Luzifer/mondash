@@ -27,7 +27,7 @@ Usage of mondash:
       --frontend-dir string   Directory to serve frontend assets from (default "./frontend")
       --listen string         Address to listen on (default ":3000")
       --log-level string      Set log level (debug, info, warning, error) (default "info")
-      --storage string        Storage engine to use (default "file:///./data")
+      --storage string        Storage engine to use (default "file:///data")
       --version               Prints current version and exits
 ```
 
