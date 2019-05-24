@@ -1,3 +1,8 @@
+# 2.0.0 / 2019-05-25
+
+  * Update README for v2
+  * Major: Rework frontend, API and improve code quality (#5)
+
 # 1.14.2 / 2018-09-16
 
   * Fix: Store StalenessStatus on metrics update
