@@ -1,3 +1,7 @@
+# 2.0.1 / 2019-05-25
+
+  * Fix: There is no way to specify relative paths
+
 # 2.0.0 / 2019-05-25
 
   * Update README for v2
