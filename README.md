@@ -22,20 +22,21 @@ To start MonDash you will need to make sure you configured your instance correct
 ```bash
 # mondash -h
 Usage of mondash:
-      --api-token="": API Token used for the /welcome dashboard (you can choose your own)
-      --baseurl="": The Base-URL the application is running on for example https://mondash.org
-      --fileDirectory="./": Directory to use for plain text storage
-      --listen=":3000": Address to listen on
-      --s3Bucket="": Bucket to use for S3 storage
-      --storage="s3": Storage engine to use (s3, file)
+      --api-token string      API Token used for the /welcome dashboard (you can choose your own)
+      --baseurl string        The Base-URL the application is running on for example https://mondash.org
+      --frontend-dir string   Directory to serve frontend assets from (default "./frontend")
+      --listen string         Address to listen on (default ":3000")
+      --log-level string      Set log level (debug, info, warning, error) (default "info")
+      --storage string        Storage engine to use (default "file:///./data")
+      --version               Prints current version and exits
 ```
 
 1. If you want to store the data in S3:
-  - Set AWS environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`)
-  - Specify `--storage=s3` and `--s3Bucket=<yourbucket>`
+  - Set AWS environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`)
+  - Specify `--storage=s3://<yourbucket>/[optional prefix]`
 2. If you want to store the data in local file system:
   - Ensure the data directory is writable
-  - Specify `--storage=file` and `--fileDirectory=<yourdirectory>`
+  - Specify `--storage=file:///absolute/path/to/directory`
 
 In all cases you need to specify `--api-token` with a token containing more than 10 characters and `--baseurl` with the base-URL of your instance.
 
@@ -47,7 +48,8 @@ To launch it, just replace the variables in following command and start the cont
 docker run \
          -e AWS_ACCESS_KEY_ID=myaccesskeyid \
          -e AWS_SECRET_ACCESS_KEY=mysecretaccesskey \
-         -e S3Bucket=mybucketname \
+         -e AWS_REGION=eu-west-1 \
+         -e STORAGE=s3://mybucketname/ \
          -e BASE_URL=http://mondash.org \
          -e API_TOKEN=yourownrandomtoken \
          -p 80:3000 \
