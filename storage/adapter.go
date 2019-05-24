@@ -1,9 +1,10 @@
-package storage // import "github.com/Luzifer/mondash/storage"
+package storage
 
 import (
 	"fmt"
+	"net/url"
 
-	"github.com/Luzifer/mondash/config"
+	"github.com/pkg/errors"
 )
 
 // Storage is an interface to have all storage systems compatible to each other
@@ -12,16 +13,6 @@ type Storage interface {
 	Get(dashboardID string) ([]byte, error)
 	Delete(dashboardID string) error
 	Exists(dashboardID string) (bool, error)
-}
-
-// AdapterNotFoundError is a named error for more simple determination which
-// type of error is thrown
-type AdapterNotFoundError struct {
-	Name string
-}
-
-func (e AdapterNotFoundError) Error() string {
-	return fmt.Sprintf("Storage '%s' not found.", e.Name)
 }
 
 // DashboardNotFoundError signalizes the requested dashboard could not be found
@@ -35,13 +26,18 @@ func (e DashboardNotFoundError) Error() string {
 
 // GetStorage acts as a storage factory providing the storage named by input
 // name parameter
-func GetStorage(cfg *config.Config) (Storage, error) {
-	switch cfg.Storage {
-	case "s3":
-		return NewS3Storage(cfg), nil
-	case "file":
-		return NewFileStorage(cfg), nil
+func GetStorage(uri string) (Storage, error) {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return nil, errors.Wrap(err, "Invalid storage URI")
 	}
 
-	return nil, AdapterNotFoundError{cfg.Storage}
+	switch u.Scheme {
+	case "s3":
+		return NewS3Storage(u), nil
+	case "file":
+		return NewFileStorage(u), nil
+	}
+
+	return nil, errors.Errorf("Storage %q not found", u.Scheme)
 }

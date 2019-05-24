@@ -18,9 +18,9 @@ type Status string
 // Collection of available status strings
 const (
 	StatusOK       Status = "OK"
-	StatusWarning         = "Warning"
-	StatusCritical        = "Critical"
-	StatusUnknown         = "Unknown"
+	StatusWarning  Status = "Warning"
+	StatusCritical Status = "Critical"
+	StatusUnknown  Status = "Unknown"
 )
 
 // Client represents an accessor to the MonDash API
@@ -46,7 +46,7 @@ func (c *Client) do(method, path string, body io.Reader) error {
 		return err
 	}
 
-	req.Header.Set("Authorization", c.token)
+	req.Header.Set("Authorization", "Token "+c.token)
 
 	req = req.WithContext(c.context)
 	res, err := http.DefaultClient.Do(req)
@@ -83,7 +83,7 @@ func (c *Client) WithContext(ctx context.Context) *Client {
 
 // DeleteDashboard will delete all your monitoring results available on your dashboard and release the dashboard URL to the public
 func (c *Client) DeleteDashboard() error {
-	return c.do("DELETE", "/"+c.board, nil)
+	return c.do(http.MethodDelete, "/"+c.board, nil)
 }
 
 // PostMetricInput contains parameters for the API request
@@ -155,7 +155,7 @@ func (c *Client) PostMetric(input *PostMetricInput) error {
 		return err
 	}
 
-	return c.do("PUT", "/"+c.board+"/"+input.MetricID, buf)
+	return c.do(http.MethodPut, "/"+c.board+"/"+input.MetricID, buf)
 }
 
 // DeleteMetricInput contains parameters for the API request
@@ -166,5 +166,5 @@ type DeleteMetricInput struct {
 
 // DeleteMetric deletes a metric from your dashboard
 func (c *Client) DeleteMetric(input *DeleteMetricInput) error {
-	return c.do("DELETE", "/"+c.board+"/"+input.MetricID, nil)
+	return c.do(http.MethodDelete, "/"+c.board+"/"+input.MetricID, nil)
 }
