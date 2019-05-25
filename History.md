@@ -1,3 +1,8 @@
+# 2.1.0 / 2019-05-25
+
+  * Mondash-Nagios: Update vendors
+  * Mondash-Nagios: Support different staleness status
+
 # 2.0.1 / 2019-05-25
 
   * Fix: There is no way to specify relative paths
