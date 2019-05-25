@@ -11,10 +11,11 @@ import (
 	"syscall"
 	"time"
 
-	mondash "github.com/Luzifer/mondash/client"
-	"github.com/Luzifer/rconfig"
 	"github.com/gosimple/slug"
 	log "github.com/sirupsen/logrus"
+
+	mondash "github.com/Luzifer/mondash/client"
+	"github.com/Luzifer/rconfig"
 )
 
 var (
@@ -24,7 +25,8 @@ var (
 		MondashToken   string        `flag:"token,t" env:"TOKEN" default:"" description:"Token associated with the specified board" validate:"nonzero"`
 		MetricID       string        `flag:"metric-id,m" env:"METRIC_ID" default:"" description:"ID of the metric, if not specified a generated ID from the title will be used"`
 		MetricTitle    string        `flag:"metric-title" env:"METRIC_TITLE" default:"" description:"Title of the metric, if not specified the command line will be used"`
-		Freshness      time.Duration `flag:"Freshness" env:"FRESHNESS" default:"1h" description:"Freshness of the metric (will turn to unknown if no new result was submitted)"`
+		Freshness      time.Duration `flag:"freshness" env:"FRESHNESS" default:"1h" description:"Freshness of the metric (will turn to unknown if no new result was submitted)"`
+		StaleStatus    string        `flag:"stale-status" default:"Unknown" description:"Status to set when metric is stale (One of Unknown, OK, Warning, Critical)"`
 		Timeout        time.Duration `flag:"timeout" env:"TIMEOUT" default:"1m" description:"Timeout for the script command to be killed"`
 		VersionAndExit bool          `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
@@ -102,14 +104,15 @@ func main() {
 
 	client := mondash.New(cfg.MondashBoard, cfg.MondashToken).WithHost(cfg.MondashHost)
 	if err := client.PostMetric(&mondash.PostMetricInput{
-		MetricID:    cfg.MetricID,
-		Title:       cfg.MetricTitle,
-		Description: output,
-		Status:      statusMapping[exitCode],
-		Value:       value,
-		Freshness:   int64(cfg.Freshness / time.Second),
-		IgnoreMAD:   true,
-		HideMAD:     true,
+		MetricID:        cfg.MetricID,
+		Title:           cfg.MetricTitle,
+		Description:     output,
+		Status:          statusMapping[exitCode],
+		Value:           value,
+		Freshness:       int64(cfg.Freshness / time.Second),
+		IgnoreMAD:       true,
+		HideMAD:         true,
+		StalenessStatus: cfg.StaleStatus,
 	}); err != nil {
 		log.WithError(err).Fatal("Could not submit metric")
 	}
