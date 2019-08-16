@@ -259,18 +259,15 @@ func (dm dashboardMetric) DataHistory() []string {
 }
 
 func (dm *dashboardMetric) Update(m *dashboardMetric) {
-	dm.Title = m.Title
 	dm.Description = m.Description
-	dm.Status = m.Status
-	dm.Value = m.Value
-	dm.IgnoreMAD = m.IgnoreMAD
+	dm.DetailURL = m.DetailURL
 	dm.HideMAD = m.HideMAD
 	dm.HideValue = m.HideValue
+	dm.IgnoreMAD = m.IgnoreMAD
 	dm.StalenessStatus = m.StalenessStatus
-
-	if m.DetailURL != "" {
-		dm.DetailURL = m.DetailURL
-	}
+	dm.Status = m.Status
+	dm.Title = m.Title
+	dm.Value = m.Value
 
 	if m.Expires != 0 {
 		dm.Expires = m.Expires
