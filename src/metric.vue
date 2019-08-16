@@ -5,12 +5,13 @@
         <b-row slot="header">
           <b-col cols="7">
             <strong>{{ metric.title }}</strong>
-            <b-btn
+            <a
               v-if="metric.detail_url"
+              class="ml-1"
               :href="metric.detail_url"
             >
-              <i class="fa fa-external-link-alt" />
-            </b-btn>
+              <i class="fas fa-link fa-xs" />
+            </a>
           </b-col>
           <b-col
             class="d-flex align-items-center"
