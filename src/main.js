@@ -11,7 +11,7 @@ import 'chartist/dist/chartist.min.css'
 Vue.use(BootstrapVue)
 
 new Vue({
-  components: { app },
   el: '#app',
+  components: { app },
   render: c => c('app'),
 })

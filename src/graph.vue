@@ -1,5 +1,8 @@
 <template>
-  <div class="ct-double-octave" ref="container"></div>
+  <div
+    ref="container"
+    class="ct-double-octave"
+  />
 </template>
 
 <script>
@@ -7,8 +10,19 @@ import chartist from 'chartist'
 import moment from 'moment'
 
 export default {
-  name: 'graph',
-  props: ['metric'],
+  name: 'Graph',
+  props: {
+    metric: {
+      required: true,
+      type: Object,
+    },
+  },
+
+  data() {
+    return {
+      chart: null,
+    }
+  },
 
   computed: {
     data() {
@@ -29,23 +43,14 @@ export default {
     },
   },
 
-  data() {
-    return {
-      chart: null,
-    }
-  },
-
-  methods: {
-  },
-
-  mounted() {
-    this.chart = chartist.Line(this.$refs.container, this.data)
-  },
-
   watch: {
     metric() {
       this.chart.update(this.data)
     },
+  },
+
+  mounted() {
+    this.chart = chartist.Line(this.$refs.container, this.data)
   },
 }
 </script>
