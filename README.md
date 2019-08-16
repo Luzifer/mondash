@@ -2,6 +2,7 @@
 ![](https://badges.fyi/github/license/Luzifer/mondash)
 ![](https://badges.fyi/github/downloads/Luzifer/mondash)
 ![](https://badges.fyi/github/latest-release/Luzifer/mondash)
+![](https://knut.in/project-status/mondash)
 
 # Luzifer / mondash
 
