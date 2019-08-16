@@ -13,7 +13,7 @@
         </b-row>
 
         <b-card-text>
-          {{ metric.description }}
+          {{ description }}
         </b-card-text>
 
         <graph :metric="metric" v-if="!metric.config.hide_mad"></graph>
@@ -45,6 +45,12 @@ import historyBar from './history-bar.vue'
 export default {
   name: 'metric',
   props: ['metric'],
+
+  computed: {
+    description() {
+      return this.metric.description.replace(new RegExp(/\n/, 'g'), '<br>')
+    },
+  },
 
   components: { graph, historyBar },
 
