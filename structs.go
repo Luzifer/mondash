@@ -112,6 +112,7 @@ type dashboardMetric struct {
 	MetricID        string                  `json:"id"`
 	Title           string                  `json:"title"`
 	Description     string                  `json:"description"`
+	DetailURL       string                  `json:"detail_url"`
 	Status          string                  `json:"status"`
 	Value           float64                 `json:"value,omitempty"`
 	Expires         int64                   `json:"expires,omitempty"`
@@ -266,6 +267,10 @@ func (dm *dashboardMetric) Update(m *dashboardMetric) {
 	dm.HideMAD = m.HideMAD
 	dm.HideValue = m.HideValue
 	dm.StalenessStatus = m.StalenessStatus
+
+	if m.DetailURL != "" {
+		dm.DetailURL = m.DetailURL
+	}
 
 	if m.Expires != 0 {
 		dm.Expires = m.Expires

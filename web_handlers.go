@@ -30,6 +30,7 @@ type outputMetric struct {
 	ID            string              `json:"id"`
 	Config        outputMetricConfig  `json:"config"`
 	Description   string              `json:"description"`
+	DetailURL     string              `json:"detail_url"`
 	HistoryBar    []historyBarSegment `json:"history_bar,omitempty"`
 	LastOK        time.Time           `json:"last_ok"`
 	LastUpdate    time.Time           `json:"last_update"`
@@ -51,6 +52,7 @@ func outputMetricFromMetric(opts outputMetricFromMetricOpts) outputMetric {
 	out := outputMetric{
 		ID:            opts.Metric.MetricID,
 		Description:   opts.Metric.Description,
+		DetailURL:     opts.Metric.DetailURL,
 		LastOK:        opts.Metric.Meta.LastOK,
 		LastUpdate:    opts.Metric.Meta.LastUpdate,
 		Median:        opts.Metric.Median(),

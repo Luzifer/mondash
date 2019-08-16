@@ -97,6 +97,9 @@ type PostMetricInput struct {
 	// A descriptive text for the current state of the metric
 	Description string `json:"description"`
 
+	// An URL with further information of the status
+	DetailURL string `json:"detail_url"`
+
 	// One of: OK, Warning, Critical, Unknown
 	Status Status `json:"status"`
 
