@@ -1,3 +1,10 @@
+# 2.2.0 / 2019-08-17
+
+  * Introduce detailed URL for linking metrics to more details
+  * Fix: Properly display newlines in metric description
+  * Update JS dependencies
+  * Update FontAwesome
+
 # 2.1.0 / 2019-05-25
 
   * Mondash-Nagios: Update vendors
