@@ -1,3 +1,8 @@
+# 2.2.1 / 2019-10-31
+
+  * Update node-sass for Node v13 support
+  * Update node modules to fix vulnerabilities
+
 # 2.2.0 / 2019-08-17
 
   * Introduce detailed URL for linking metrics to more details
