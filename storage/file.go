@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,6 +13,9 @@ import (
 // FileStorage is a storage adapter storing the data into single local files
 type FileStorage struct {
 	storagePath string
+
+	dashLock     map[string]*sync.RWMutex
+	dashLockLock *sync.Mutex
 }
 
 // NewFileStorage instanciates a new FileStorage
@@ -25,11 +29,17 @@ func NewFileStorage(uri *url.URL) *FileStorage {
 
 	return &FileStorage{
 		storagePath: uri.Path,
+
+		dashLock:     map[string]*sync.RWMutex{},
+		dashLockLock: new(sync.Mutex),
 	}
 }
 
 // Put writes the given data to FS
 func (f *FileStorage) Put(dashboardID string, data []byte) error {
+	f.getLock(dashboardID).Lock()
+	defer f.getLock(dashboardID).Unlock()
+
 	err := ioutil.WriteFile(f.getFilePath(dashboardID), data, 0600)
 
 	return err
@@ -37,6 +47,9 @@ func (f *FileStorage) Put(dashboardID string, data []byte) error {
 
 // Get loads the data for the given dashboard from FS
 func (f *FileStorage) Get(dashboardID string) ([]byte, error) {
+	f.getLock(dashboardID).RLock()
+	defer f.getLock(dashboardID).RUnlock()
+
 	data, err := ioutil.ReadFile(f.getFilePath(dashboardID))
 	if err != nil {
 		return nil, DashboardNotFoundError{dashboardID}
@@ -47,6 +60,9 @@ func (f *FileStorage) Get(dashboardID string) ([]byte, error) {
 
 // Delete deletes the given dashboard from FS
 func (f *FileStorage) Delete(dashboardID string) error {
+	f.getLock(dashboardID).Lock()
+	defer f.getLock(dashboardID).Unlock()
+
 	if exists, err := f.Exists(dashboardID); err != nil || !exists {
 		if err != nil {
 			return err
@@ -59,6 +75,9 @@ func (f *FileStorage) Delete(dashboardID string) error {
 
 // Exists checks for the existence of the given dashboard
 func (f *FileStorage) Exists(dashboardID string) (bool, error) {
+	f.getLock(dashboardID).RLock()
+	defer f.getLock(dashboardID).RUnlock()
+
 	if _, err := os.Stat(f.getFilePath(dashboardID)); err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
@@ -70,4 +89,17 @@ func (f *FileStorage) Exists(dashboardID string) (bool, error) {
 
 func (f *FileStorage) getFilePath(dashboardID string) string {
 	return path.Join(f.storagePath, dashboardID+".txt")
+}
+
+func (f *FileStorage) getLock(dashboardID string) *sync.RWMutex {
+	f.dashLockLock.Lock()
+	defer f.dashLockLock.Unlock()
+
+	l, ok := f.dashLock[dashboardID]
+	if !ok {
+		l = new(sync.RWMutex)
+		f.dashLock[dashboardID] = l
+	}
+
+	return l
 }
