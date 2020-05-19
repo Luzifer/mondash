@@ -1,3 +1,9 @@
+# 2.2.2 / 2020-05-19
+
+  * Fix typo in status check
+  * Prevent write-collisions on frequent writes
+  * npm audit fix
+
 # 2.2.1 / 2019-10-31
 
   * Update node-sass for Node v13 support
