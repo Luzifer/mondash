@@ -189,13 +189,13 @@ func (dm dashboardMetric) StatisticalStatus() string {
 
 	switch {
 	case mult > 4:
-		return "Critical"
+		return metricStatusStringMapping[metricStatusCritical]
 
 	case mult > 3:
-		return "Warning"
+		return metricStatusStringMapping[metricStatusWarning]
 
 	default:
-		return "OK"
+		return metricStatusStringMapping[metricStatusOK]
 	}
 }
 
@@ -322,7 +322,7 @@ func (dm dashboardMetric) IsValid() (bool, string) {
 		return false, "Freshness not in range 0 < x < 640800"
 	}
 
-	if !str.StringInSlice(dm.Status, []string{"OK", "Warning", "Critical", "Unknowm"}) {
+	if !str.StringInSlice(dm.Status, metricStatusStringMapping) {
 		return false, "Status not allowed"
 	}
 
