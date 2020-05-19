@@ -9152,7 +9152,7 @@ func bindataFrontendAppjs() (*asset, error) {
 		size: 1143281,
 		md5checksum: "",
 		mode: os.FileMode(420),
-		modTime: time.Unix(1584275846, 0),
+		modTime: time.Unix(1589874677, 0),
 	}
 
 	a := &asset{bytes: bytes, info: info}
