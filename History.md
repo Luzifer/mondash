@@ -1,3 +1,7 @@
+# 2.2.3 / 2020-08-02
+
+  * npm update / audit fix / bundle update
+
 # 2.2.2 / 2020-05-19
 
   * Fix typo in status check
