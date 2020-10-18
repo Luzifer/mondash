@@ -10,9 +10,9 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
-	httphelper "github.com/Luzifer/go_helpers/http"
+	httphelper "github.com/Luzifer/go_helpers/v2/http"
 	"github.com/Luzifer/mondash/storage"
-	"github.com/Luzifer/rconfig"
+	"github.com/Luzifer/rconfig/v2"
 )
 
 var (
