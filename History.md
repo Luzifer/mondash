@@ -1,3 +1,7 @@
+# 2.3.1 / 2020-10-18
+
+  * Move mondash-nagios to go modules
+
 # 2.3.0 / 2020-10-18
 
   * Replace old vendoring with go modules, npm audit fix
