@@ -15,7 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	mondash "github.com/Luzifer/mondash/client"
-	"github.com/Luzifer/rconfig"
+	"github.com/Luzifer/rconfig/v2"
 )
 
 var (
@@ -42,6 +42,7 @@ var (
 )
 
 func init() {
+	rconfig.AutoEnv(true)
 	if err := rconfig.ParseAndValidate(&cfg); err != nil {
 		log.Fatalf("Unable to parse commandline options: %s", err)
 	}
