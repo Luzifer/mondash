@@ -1,3 +1,7 @@
+# 2.3.0 / 2020-10-18
+
+  * Replace old vendoring with go modules, npm audit fix
+
 # 2.2.3 / 2020-08-02
 
   * npm update / audit fix / bundle update
