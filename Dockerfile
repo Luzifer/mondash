@@ -4,6 +4,9 @@ COPY . /src/mondash
 WORKDIR /src/mondash/src
 
 RUN set -ex \
+ && apk --no-cache add \
+      build-base \
+      python \
  && npm ci \
  && npm run build
 
