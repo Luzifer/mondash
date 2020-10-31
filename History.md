@@ -1,3 +1,7 @@
+# 2.3.2 / 2020-10-31
+
+  * Docker: Install build packages for node-gyp
+
 # 2.3.1 / 2020-10-18
 
   * Move mondash-nagios to go modules
