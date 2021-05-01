@@ -1,4 +1,4 @@
-FROM node:alpine as node_builder
+FROM node:14-alpine as node_builder
 
 COPY . /src/mondash
 WORKDIR /src/mondash/src
@@ -6,7 +6,7 @@ WORKDIR /src/mondash/src
 RUN set -ex \
  && apk --no-cache add \
       build-base \
-      python \
+      python3 \
  && npm ci \
  && npm run build
 
