@@ -19,7 +19,7 @@ var (
 	store storage.Storage
 	cfg   = struct {
 		APIToken    string `flag:"api-token" env:"API_TOKEN" description:"API Token used for the /welcome dashboard (you can choose your own)"`
-		BaseURL     string `flag:"baseurl" env:"BASE_URL" description:"The Base-URL the application is running on for example https://mondash.org"`
+		BaseURL     string `flag:"baseurl" env:"BASE_URL" default:"http://127.0.0.1:3000" description:"The Base-URL the application is running on for example https://mondash.org"`
 		FrontendDir string `flag:"frontend-dir" default:"./frontend" description:"Directory to serve frontend assets from"`
 		Storage     string `flag:"storage" default:"file:///data" description:"Storage engine to use"`
 
